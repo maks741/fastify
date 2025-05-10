@@ -1,5 +1,6 @@
 package com.fastify.auth.service;
 
+import com.fastify.auth.exception.DuplicateEmailException;
 import com.fastify.auth.model.dto.LoginRequestDto;
 import com.fastify.auth.model.dto.LoginResponseDto;
 import com.fastify.auth.model.dto.SignUpRequestDto;
@@ -9,6 +10,8 @@ import com.fastify.auth.model.enumeration.Role;
 import com.fastify.auth.repository.UserRepository;
 import com.fastify.auth.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) {
+        System.out.println("signUpRequestDto: " + signUpRequestDto);
         User user = User.builder()
                 .username(signUpRequestDto.username())
                 .email(signUpRequestDto.email())
@@ -32,7 +36,13 @@ public class UserServiceImpl implements UserService {
                 .role(Role.USER)
                 .build();
 
-        user = userRepository.save(user);
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateEmailException();
+        }
+
+        System.out.println("user: " + user);
 
         String jwt = jwtService.generateToken(user);
 
