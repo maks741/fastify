@@ -1,5 +1,7 @@
 package com.fastify.auth.service;
 
+import com.fastify.auth.model.dto.LoginRequestDto;
+import com.fastify.auth.model.dto.LoginResponseDto;
 import com.fastify.auth.model.dto.SignUpRequestDto;
 import com.fastify.auth.model.dto.SignUpResponseDto;
 import com.fastify.auth.model.entity.User;
@@ -27,5 +29,10 @@ public class UserServiceImpl implements UserService {
                 user.getUsername(),
                 user.getEmail()
         );
+    }
+
+    @Override
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        return null;
     }
 }

@@ -20,6 +20,12 @@ public record SignUpRequestDto(
                 regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
                 message = "Please enter valid email"
         )
-        String email
+        String email,
+        @NotNull(message = "password is required")
+        @Size.List({
+                @Size(min = 1, message = "password cannot be empty"),
+                @Size(max = 200, message = "password cannot be longer than {max} characters")
+        })
+        String password
 ) {
 }

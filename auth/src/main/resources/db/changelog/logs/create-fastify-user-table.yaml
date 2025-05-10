@@ -4,7 +4,7 @@ databaseChangeLog:
       author: Maksym Kozak
       changes:
         - createTable:
-            tableName: fastify_user
+            tableName: _user
             columns:
               - column:
                   name: id
@@ -22,6 +22,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+              - column:
+                  name: password
+                  type: text
+                  constraints:
+                    nullable: false
               - column:
                   name: created_at
                   type: timestamp
