@@ -3,3 +3,9 @@ spring:
     active: dev
   liquibase:
     enabled: true
+
+jwt:
+  signing:
+    key: ${JWT_SIGNING_KEY}
+  expiration:
+    period: 21600000

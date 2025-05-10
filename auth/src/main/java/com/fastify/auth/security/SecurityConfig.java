@@ -23,7 +23,10 @@ public class SecurityConfig {
 
         httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
             authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("")
+                    .requestMatchers(
+                            "/auth/signup",
+                            "/auth/login"
+                    )
                     .permitAll()
                     .anyRequest()
                     .authenticated();
@@ -35,6 +38,8 @@ public class SecurityConfig {
         );
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
     }
 
 }
