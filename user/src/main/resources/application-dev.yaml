@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:7000/_user
+    password: postgres
+    username: postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    url: jdbc:postgresql://localhost:7000/_user
+    password: postgres
+    user: postgres
+server:
+  port: 8070
