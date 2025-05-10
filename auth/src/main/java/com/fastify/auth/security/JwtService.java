@@ -26,15 +26,6 @@ public class JwtService {
         this.jwtExpirationPeriod = jwtExpirationPeriod;
     }
 
-    public String extractUsername(String jwt) {
-        return extractClaims(jwt, Claims::getSubject);
-    }
-
-    public boolean validate(String jwt, UserDetails userDetails) {
-        String username = extractUsername(jwt);
-        return username.equals(userDetails.getUsername()) && tokenNotExpired(jwt);
-    }
-
     public String generateToken(UserDetails userDetails) {
         return generateToken(Collections.emptyMap(), userDetails);
     }
