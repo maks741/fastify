@@ -14,6 +14,6 @@ public class FastifyUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userService.loadUserByName(username);
+        return userService.findByEmail(username);
     }
 }

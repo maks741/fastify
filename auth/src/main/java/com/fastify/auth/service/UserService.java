@@ -4,7 +4,7 @@ import com.fastify.auth.model.dto.LoginRequestDto;
 import com.fastify.auth.model.dto.LoginResponseDto;
 import com.fastify.auth.model.dto.SignUpRequestDto;
 import com.fastify.auth.model.dto.SignUpResponseDto;
-import org.springframework.security.core.userdetails.UserDetails;
+import com.fastify.auth.model.entity.User;
 
 public interface UserService {
 
@@ -12,6 +12,6 @@ public interface UserService {
 
     LoginResponseDto login(LoginRequestDto loginRequestDto);
 
-    UserDetails loadUserByName(String username);
+    User findByEmail(String email);
 
 }
