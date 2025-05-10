@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.fastify</groupId>
-	<artifactId>song-download</artifactId>
+	<artifactId>music-download</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>song-download</name>
 	<description>song-download</description>

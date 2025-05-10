@@ -1,4 +1,4 @@
-package com.fastify.songdownload.controller;
+package com.fastify.musicdownload.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DownloadController {
 
-    @GetMapping("/test")
-    public String test() {
+    @GetMapping
+    public String download() {
         return "lox";
     }
 

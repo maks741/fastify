@@ -1,13 +1,13 @@
-package com.fastify.songdownload;
+package com.fastify.musicdownload;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SongDownloadApplication {
+public class MusicDownloadApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SongDownloadApplication.class, args);
+		SpringApplication.run(MusicDownloadApplication.class, args);
 	}
 
 }

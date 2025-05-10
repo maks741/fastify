@@ -1,4 +1,4 @@
-package com.fastify.songdownload.security;
+package com.fastify.musicdownload.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

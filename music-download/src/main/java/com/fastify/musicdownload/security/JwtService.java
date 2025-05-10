@@ -1,4 +1,4 @@
-package com.fastify.songdownload.security;
+package com.fastify.musicdownload.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
