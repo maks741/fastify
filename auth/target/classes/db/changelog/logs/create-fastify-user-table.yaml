@@ -13,7 +13,7 @@ databaseChangeLog:
                     primaryKey: true
                   autoIncrement: true
               - column:
-                  name: username
+                  name: name
                   type: varchar(200)
                   constraints:
                     nullable: false
