@@ -7,6 +7,7 @@ import com.fastify.auth.model.dto.SignUpResponseDto;
 import com.fastify.auth.model.entity.User;
 import com.fastify.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,5 +35,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         return null;
+    }
+
+    @Override
+    public UserDetails loadUserByName(String username) {
+        return userRepository.findByEmail(username)
+                .orElseThrow(RuntimeException::new);
     }
 }
