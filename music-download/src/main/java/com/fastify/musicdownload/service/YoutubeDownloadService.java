@@ -20,19 +20,22 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final String thumbnailFormat;
     private final String scriptName;
     private final String scriptResourcePath;
+    private final Long downloadTimeoutMillis;
 
     public YoutubeDownloadService(
             @Value("${download.out.path}") String outputPath,
             @Value("${download.out.format.audio}") String audioFormat,
             @Value("${download.out.format.img}") String thumbnailFormat,
             @Value("${download.script.run}") String scriptName,
-            @Value("${download.script.resource.path}") String scriptResourcePath
+            @Value("${download.script.resource.path}") String scriptResourcePath,
+            @Value("${download.timeout}") Long downloadTimeoutMillis
     ) {
         this.outputPath = outputPath;
         this.audioFormat = audioFormat;
         this.thumbnailFormat = thumbnailFormat;
         this.scriptName = scriptName;
         this.scriptResourcePath = scriptResourcePath;
+        this.downloadTimeoutMillis = downloadTimeoutMillis;
     }
 
     @Override
@@ -53,7 +56,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         try {
             Process process = processBuilder.start();
-            boolean downloadedInTime = process.waitFor(1, TimeUnit.SECONDS);
+            boolean downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
 
             if (!downloadedInTime) {
                 // TODO: there are leftovers from download. Need a way to erase them
