@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -63,25 +65,37 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         try {
             Process process = processBuilder.start();
-            String downloadResultJson = getDownloadResultAsJson(process);
-            boolean downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
 
-            if (!downloadedInTime) {
-                // TODO: there are leftovers from download. Need a way to erase them
-                process.destroyForcibly();
-                throw new DownloadTimeoutException("Download took too long");
-            }
+            new FutureTask<>(() -> {
+                boolean downloadedInTime;
+                try {
+                    downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
-            DownloadResult downloadResult = new Gson().fromJson(downloadResultJson, DownloadResult.class);
+                if (!downloadedInTime) {
+                    // TODO: there are leftovers from download. Need a way to erase them
+                    process.destroyForcibly();
+                    throw new DownloadTimeoutException("Download took too long");
+                }
+                return downloadedInTime;
+            }).run();
+
+            DownloadResult downloadResult = CompletableFuture.supplyAsync(() -> {
+                try {
+                    return getDownloadResult(process);
+                } catch (IOException e) {
+                    throw new UnableToDownloadException("Unable to download");
+                }
+            }).join();
             System.out.println("downloadResult: " + downloadResult);
         } catch (IOException e) {
             throw new UnableToDownloadException("Unexpected error during download");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    private String getDownloadResultAsJson(Process process) throws IOException {
+    private DownloadResult getDownloadResult(Process process) throws IOException {
         StringBuilder downloadResultJsonBuilder = new StringBuilder();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line;
@@ -91,7 +105,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
             }
             downloadResultJsonBuilder.append(line);
         }
-        return downloadResultJsonBuilder.toString();
+        String downloadResultJson = downloadResultJsonBuilder.toString();
+        return new Gson().fromJson(downloadResultJson, DownloadResult.class);
     }
 
     private void validateYoutubeUrl(String url) {
