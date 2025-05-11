@@ -12,3 +12,6 @@ download:
     run: './youtube.dwnld'
     resource:
       path: '/script'
+
+aws:
+  region: 'eu-north-1'
