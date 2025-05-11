@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -53,6 +54,13 @@ public class YoutubeDownloadService implements MusicDownloadService {
     @Override
     public void download(MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
+        // TODO: 1. user validation script. Listen for error stream, if there are any, throw exception
+        // if no exception, retrieve dto as response which contains the file size
+        // validate file size against threshold
+        // then, we can download without worrying about anything
+        // and no timeout needed
+
+
         validateYoutubeUrl(youtubeUrl);
 
         String scriptsDirPath = Objects.requireNonNull(getClass().getResource(scriptResourcePath)).getPath();
@@ -68,7 +76,14 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         try (CloseableProcess closeableProcess = new CloseableProcess(processBuilder.start());
              InputStream inputStream = closeableProcess.getInputStream()) {
-            startTimeout(closeableProcess.getProcess());
+            startTimeout(closeableProcess.getProcess()).thenAccept(result -> {
+                if (!result) {
+                    System.out.println("AAAA");
+                    System.out.println("AAAA");
+                    System.out.println("AAAA");
+                    throw new DownloadTimeoutException("Download took too long");
+                }
+            });
 
             DownloadResult downloadResult = getDownloadResult(inputStream);
             System.out.println("downloadResult: " + downloadResult);
@@ -86,16 +101,22 @@ public class YoutubeDownloadService implements MusicDownloadService {
         return new Gson().fromJson(downloadResultJson, DownloadResult.class);
     }
 
-    private void startTimeout(Process process) throws DownloadTimeoutException {
-        new FutureTask<>(() -> {
+    private CompletableFuture<Boolean> startTimeout(Process process) throws DownloadTimeoutException {
+        return CompletableFuture.supplyAsync(() -> {
             boolean downloadedInTime;
-            downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
-
-            if (!downloadedInTime) {
-                throw new DownloadTimeoutException("Download took too long");
+            try {
+                downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
+
             return downloadedInTime;
-        }).run();
+        }).handle((res, ex) -> {
+            if (ex != null) {
+                return false;
+            }
+            return res;
+        });
     }
 
     private void validateYoutubeUrl(String url) {
