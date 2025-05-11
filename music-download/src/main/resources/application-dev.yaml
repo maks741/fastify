@@ -1,2 +1,13 @@
 server:
   port: 8060
+
+download:
+  out:
+    path: '/home/maks/me/programming/pet/fastify/music-download/out/'
+    format:
+      audio: mp3
+      img: png
+  script:
+    run: './youtube.dwnld'
+    resource:
+      path: '/script'
