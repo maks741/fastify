@@ -6,17 +6,21 @@ import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.DownloadResult;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class YoutubeDownloadService implements MusicDownloadService {
@@ -95,17 +99,12 @@ public class YoutubeDownloadService implements MusicDownloadService {
         }
     }
 
-    private DownloadResult getDownloadResult(Process process) throws IOException {
-        StringBuilder downloadResultJsonBuilder = new StringBuilder();
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
-        while ((line = bufferedReader.readLine()) != null) {
-            if (unrelatedToJson(line)) {
-                continue;
-            }
-            downloadResultJsonBuilder.append(line);
-        }
-        String downloadResultJson = downloadResultJsonBuilder.toString();
+    private DownloadResult getDownloadResult(Process process) throws IOException, JsonParseException {
+        String downloadResultJson = IOUtils.toString(process.getInputStream(), StandardCharsets.UTF_8)
+                .lines()
+                .filter(this::relatedToJson)
+                .collect(Collectors.joining("\n"));
+
         return new Gson().fromJson(downloadResultJson, DownloadResult.class);
     }
 
@@ -116,8 +115,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
         }
     }
 
-    private boolean unrelatedToJson(String line) {
+    private boolean relatedToJson(String line) {
         String trimmed = line.trim();
-        return !(trimmed.startsWith("{") || trimmed.startsWith("}") || trimmed.startsWith("\""));
+        return trimmed.startsWith("{") || trimmed.startsWith("}") || trimmed.startsWith("\"");
     }
 }
