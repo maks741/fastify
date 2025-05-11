@@ -1,5 +1,8 @@
 package com.fastify.musicdownload.service;
 
+import com.fastify.musicdownload.exception.DownloadTimeoutException;
+import com.fastify.musicdownload.exception.InvalidUrlException;
+import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,27 +15,32 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class YoutubeDownloadService implements MusicDownloadService {
 
-    @Value("${download.out.path}")
-    private String outputPath;
+    private final String outputPath;
+    private final String audioFormat;
+    private final String thumbnailFormat;
+    private final String scriptName;
+    private final String scriptResourcePath;
 
-    @Value("${download.out.format.audio}")
-    private String audioFormat;
-
-    @Value("${download.out.format.img}")
-    private String thumbnailFormat;
-
-    @Value("${download.script.run}")
-    private String scriptName;
-
-    @Value("${download.script.resource.path}")
-    private String scriptResourcePath;
+    public YoutubeDownloadService(
+            @Value("${download.out.path}") String outputPath,
+            @Value("${download.out.format.audio}") String audioFormat,
+            @Value("${download.out.format.img}") String thumbnailFormat,
+            @Value("${download.script.run}") String scriptName,
+            @Value("${download.script.resource.path}") String scriptResourcePath
+    ) {
+        this.outputPath = outputPath;
+        this.audioFormat = audioFormat;
+        this.thumbnailFormat = thumbnailFormat;
+        this.scriptName = scriptName;
+        this.scriptResourcePath = scriptResourcePath;
+    }
 
     @Override
     public void download(MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
-        String scriptsDirPath = Objects.requireNonNull(getClass().getResource(scriptResourcePath)).getPath();
+        validateYoutubeUrl(youtubeUrl);
 
-        // TODO: validate youtube url
+        String scriptsDirPath = Objects.requireNonNull(getClass().getResource(scriptResourcePath)).getPath();
 
         ProcessBuilder processBuilder = new ProcessBuilder(
                 scriptName,
@@ -45,12 +53,24 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         try {
             Process process = processBuilder.start();
-            process.waitFor(15, TimeUnit.SECONDS);
+            boolean downloadedInTime = process.waitFor(1, TimeUnit.SECONDS);
+
+            if (!downloadedInTime) {
+                // TODO: there are leftovers from download. Need a way to erase them
+                process.destroyForcibly();
+                throw new DownloadTimeoutException("Download took too long");
+            }
         } catch (IOException e) {
-            // TODO: custom exception
-            throw new RuntimeException(e);
+            throw new UnableToDownloadException("Unexpected error during download");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void validateYoutubeUrl(String url) {
+        String regex = "^http[s,]://.*youtube.*";
+        if (!url.matches(regex)) {
+            throw new InvalidUrlException(url + " is not a valid Youtube url");
         }
     }
 }
