@@ -3,11 +3,15 @@ package com.fastify.musicdownload.service;
 import com.fastify.musicdownload.exception.DownloadTimeoutException;
 import com.fastify.musicdownload.exception.InvalidUrlException;
 import com.fastify.musicdownload.exception.UnableToDownloadException;
+import com.fastify.musicdownload.model.DownloadResult;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +63,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         try {
             Process process = processBuilder.start();
+            String downloadResultJson = getDownloadResultAsJson(process);
             boolean downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
 
             if (!downloadedInTime) {
@@ -67,7 +72,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 throw new DownloadTimeoutException("Download took too long");
             }
 
-
+            DownloadResult downloadResult = new Gson().fromJson(downloadResultJson, DownloadResult.class);
+            System.out.println("downloadResult: " + downloadResult);
         } catch (IOException e) {
             throw new UnableToDownloadException("Unexpected error during download");
         } catch (InterruptedException e) {
@@ -75,10 +81,28 @@ public class YoutubeDownloadService implements MusicDownloadService {
         }
     }
 
+    private String getDownloadResultAsJson(Process process) throws IOException {
+        StringBuilder downloadResultJsonBuilder = new StringBuilder();
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+            if (unrelatedToJson(line)) {
+                continue;
+            }
+            downloadResultJsonBuilder.append(line);
+        }
+        return downloadResultJsonBuilder.toString();
+    }
+
     private void validateYoutubeUrl(String url) {
         String regex = "^http[s,]://.*youtube.*";
         if (!url.matches(regex)) {
             throw new InvalidUrlException(url + " is not a valid Youtube url");
         }
+    }
+
+    private boolean unrelatedToJson(String line) {
+        String trimmed = line.trim();
+        return !(trimmed.startsWith("{") || trimmed.startsWith("}") || trimmed.startsWith("\""));
     }
 }
