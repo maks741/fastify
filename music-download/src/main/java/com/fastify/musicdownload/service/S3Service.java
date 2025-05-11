@@ -1,6 +1,6 @@
 package com.fastify.musicdownload.service;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -12,12 +12,20 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @Service
-@RequiredArgsConstructor
 public class S3Service {
 
     private final S3Client s3Client;
+    private final String bucket;
 
-    public void putObject(String bucket, String key, Path filePath) {
+    public S3Service(
+            S3Client s3Client,
+            @Value("${aws.bucket.name}") String bucket
+    ) {
+        this.s3Client = s3Client;
+        this.bucket = bucket;
+    }
+
+    public void putObject(String key, Path filePath) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
@@ -26,7 +34,7 @@ public class S3Service {
         s3Client.putObject(putObjectRequest, filePath);
     }
 
-    public byte[] getObject(String bucket, String key) {
+    public byte[] getObject(String key) {
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
