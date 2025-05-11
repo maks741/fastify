@@ -21,14 +21,16 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final String scriptName;
     private final String scriptResourcePath;
     private final Long downloadTimeoutMillis;
+    private final S3Service s3Service;
 
     public YoutubeDownloadService(
             @Value("${download.out.path}") String outputPath,
             @Value("${download.out.format.audio}") String audioFormat,
-            @Value("${download.out.format.img}") String thumbnailFormat,
+            @Value("${download.out.format.thumbnail}") String thumbnailFormat,
             @Value("${download.script.run}") String scriptName,
             @Value("${download.script.resource.path}") String scriptResourcePath,
-            @Value("${download.timeout}") Long downloadTimeoutMillis
+            @Value("${download.timeout}") Long downloadTimeoutMillis,
+            S3Service s3Service
     ) {
         this.outputPath = outputPath;
         this.audioFormat = audioFormat;
@@ -36,6 +38,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         this.scriptName = scriptName;
         this.scriptResourcePath = scriptResourcePath;
         this.downloadTimeoutMillis = downloadTimeoutMillis;
+        this.s3Service = s3Service;
     }
 
     @Override
@@ -63,6 +66,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 process.destroyForcibly();
                 throw new DownloadTimeoutException("Download took too long");
             }
+
+
         } catch (IOException e) {
             throw new UnableToDownloadException("Unexpected error during download");
         } catch (InterruptedException e) {
