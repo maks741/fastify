@@ -1,6 +1,5 @@
 package com.fastify.musicdownload.service;
 
-import com.fastify.musicdownload.exception.DownloadTimeoutException;
 import com.fastify.musicdownload.exception.InvalidUrlException;
 import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.DownloadResult;
@@ -11,15 +10,10 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,8 +24,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final String thumbnailFormat;
     private final String scriptName;
     private final String scriptResourcePath;
-    private final Long downloadTimeoutMillis;
     private final S3Service s3Service;
+    private final DownloadTimeoutService downloadTimeoutService;
 
     public YoutubeDownloadService(
             @Value("${download.out.path}") String outputPath,
@@ -39,16 +33,16 @@ public class YoutubeDownloadService implements MusicDownloadService {
             @Value("${download.out.format.thumbnail}") String thumbnailFormat,
             @Value("${download.script.run}") String scriptName,
             @Value("${download.script.resource.path}") String scriptResourcePath,
-            @Value("${download.timeout}") Long downloadTimeoutMillis,
-            S3Service s3Service
+            S3Service s3Service,
+            DownloadTimeoutService downloadTimeoutService
     ) {
         this.outputPath = outputPath;
         this.audioFormat = audioFormat;
         this.thumbnailFormat = thumbnailFormat;
         this.scriptName = scriptName;
         this.scriptResourcePath = scriptResourcePath;
-        this.downloadTimeoutMillis = downloadTimeoutMillis;
         this.s3Service = s3Service;
+        this.downloadTimeoutService = downloadTimeoutService;
     }
 
     @Override
@@ -70,21 +64,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         try {
             Process process = processBuilder.start();
 
-            new FutureTask<>(() -> {
-                boolean downloadedInTime;
-                try {
-                    downloadedInTime = process.waitFor(downloadTimeoutMillis, TimeUnit.MILLISECONDS);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                if (!downloadedInTime) {
-                    // TODO: there are leftovers from download. Need a way to erase them
-                    process.destroyForcibly();
-                    throw new DownloadTimeoutException("Download took too long");
-                }
-                return downloadedInTime;
-            }).run();
+            downloadTimeoutService.startTimeout(process);
 
             DownloadResult downloadResult = getDownloadResult(process);
             System.out.println("downloadResult: " + downloadResult);
