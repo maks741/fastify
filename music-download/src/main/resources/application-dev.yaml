@@ -2,7 +2,7 @@ server:
   port: 8060
 
 download:
-  timeout: 1000
+  timeout: 20000
   out:
     path: '/home/maks/me/programming/pet/fastify/music-download/out/'
     format:

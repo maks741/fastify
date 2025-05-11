@@ -86,15 +86,9 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 return downloadedInTime;
             }).run();
 
-            DownloadResult downloadResult = CompletableFuture.supplyAsync(() -> {
-                try {
-                    return getDownloadResult(process);
-                } catch (IOException e) {
-                    throw new UnableToDownloadException("Unable to download");
-                }
-            }).join();
+            DownloadResult downloadResult = getDownloadResult(process);
             System.out.println("downloadResult: " + downloadResult);
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             throw new UnableToDownloadException("Unexpected error during download");
         }
     }
