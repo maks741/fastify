@@ -29,7 +29,7 @@ public class JwtService {
         return tokenNotExpired(jwt);
     }
 
-    private <T> T extractClaims(String jwt, Function<Claims, T> claimsResolver) {
+    public  <T> T extractClaims(String jwt, Function<Claims, T> claimsResolver) {
         Claims claims = extractClaims(jwt);
         return claimsResolver.apply(claims);
     }
