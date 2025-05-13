@@ -23,6 +23,6 @@ public class User {
     private Long id;
 
     @OneToMany(mappedBy = "user")
-    private List<Music> music;
+    private List<Music> playlist;
 
 }

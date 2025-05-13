@@ -60,7 +60,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         String youtubeUrl = musicDownloadDto.url();
         validateYoutubeUrl(youtubeUrl);
 
-        if (user.getMusic()
+        if (user.getPlaylist()
                 .stream()
                 .map(Music::getUrl)
                 .toList().contains(youtubeUrl)) {
