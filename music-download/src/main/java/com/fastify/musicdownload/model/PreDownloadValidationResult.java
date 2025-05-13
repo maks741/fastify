@@ -1,12 +1,10 @@
 package com.fastify.musicdownload.model;
 
-public record DownloadResult(
+public record PreDownloadValidationResult(
         String videoId,
         String uploader,
         String title,
         Double filesize,
-        Double filesizeMb,
-        String audioPath,
-        String thumbnailPath
+        Double filesizeMb
 ) {
 }

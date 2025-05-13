@@ -15,6 +15,10 @@ public class CloseableProcess implements AutoCloseable {
         return process.getInputStream();
     }
 
+    public InputStream getErrorStream() {
+        return process.getErrorStream();
+    }
+
     @Override
     public void close() {
         process.destroyForcibly();

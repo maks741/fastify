@@ -2,16 +2,16 @@ server:
   port: 8060
 
 download:
-  timeout: 1000
   out:
     path: '/home/maks/me/programming/pet/fastify/music-download/out/'
     format:
       audio: mp3
       thumbnail: png
-  script:
-    run: './youtube.dwnld'
-    resource:
-      path: '/script'
+  scripts:
+    resource-path: '/script'
+    validate: './youtube.vldt'
+    download: './youtube.dwnld'
+
 
 aws:
   region: 'eu-north-1'
