@@ -1,12 +1,15 @@
 package com.fastify.musicdownload.service;
 
 import com.fastify.musicdownload.exception.DownloadTooLargeException;
+import com.fastify.musicdownload.exception.DuplicateDownloadException;
 import com.fastify.musicdownload.exception.InvalidUrlException;
 import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.DownloadResult;
 import com.fastify.musicdownload.model.PreDownloadValidationResult;
 import com.fastify.musicdownload.model.dto.DownloadResultDto;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
+import com.fastify.musicdownload.model.entity.Music;
+import com.fastify.musicdownload.model.entity.User;
 import com.fastify.musicdownload.util.CloseableProcess;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -53,9 +56,16 @@ public class YoutubeDownloadService implements MusicDownloadService {
     }
 
     @Override
-    public DownloadResultDto download(MusicDownloadDto musicDownloadDto) {
+    public DownloadResultDto download(User user, MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
         validateYoutubeUrl(youtubeUrl);
+
+        if (user.getMusic()
+                .stream()
+                .map(Music::getUrl)
+                .toList().contains(youtubeUrl)) {
+            throw new DuplicateDownloadException("Cannot download same video multiple times");
+        }
 
         ProcessBuilder validateDownloadScriptName = buildScriptProcess(
                 youtubeValidateScriptName,
