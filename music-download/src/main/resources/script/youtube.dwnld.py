@@ -27,12 +27,15 @@ def download_audio(url, download_path, audio_format, thumbnail_format):
     info = ydl.extract_info(url, download=True)
     uploader = info.get("uploader")
     title = info.get("title")
+    filesize = info.get("filesize") or info.get("filesize_approx")
     relative_download_path = download_path + uploader + '^' + title + '/' + uploader + '^' + title
     base_output_path = os.path.abspath(relative_download_path)
     output = {
        "videoId": info.get("id"),
        "uploader": uploader,
        "title": title,
+       "filesize": filesize,
+       "filesizeMb": filesize / 1_000_000,
        "audioPath": base_output_path + '.' + audio_format,
        "thumbnailPath": base_output_path + '.' + thumbnail_format
     }
