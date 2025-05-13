@@ -58,18 +58,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 youtubeUrl
         );
 
-        PreDownloadValidationResult preDownloadValidationResult;
-        try (CloseableProcess closeableProcess = new CloseableProcess(validateDownloadScriptName.start());
-             InputStream inputStream = closeableProcess.getInputStream();
-             InputStream errorStream = closeableProcess.getErrorStream()
-        ) {
-            preDownloadValidationResult = readInputStream(inputStream, PreDownloadValidationResult.class);
-            if (errorStream.readAllBytes().length != 0) {
-                throw new UnableToDownloadException("Unexpected error during url validation");
-            }
-        } catch (IOException e) {
-            throw new UnableToDownloadException("Unexpected error during url validation");
-        }
+        PreDownloadValidationResult preDownloadValidationResult = readProcessInputStream(validateDownloadScriptName, PreDownloadValidationResult.class);
 
         if (preDownloadValidationResult.filesizeMb() > 100) {
             throw new RuntimeException();
@@ -83,19 +72,27 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 thumbnailFormat
         );
 
-        DownloadResult downloadResult;
-        try (CloseableProcess closeableProcess = new CloseableProcess(processBuilder.start());
-             InputStream inputStream = closeableProcess.getInputStream()) {
-            downloadResult = readInputStream(inputStream, DownloadResult.class);
-        } catch (IOException | JsonParseException e) {
-            throw new UnableToDownloadException("Unexpected error during download");
-        }
+        DownloadResult downloadResult = readProcessInputStream(processBuilder, DownloadResult.class);
 
         return DownloadResultDto.builder()
                 .videoId(downloadResult.videoId())
                 .uploader(downloadResult.uploader())
                 .title(downloadResult.title())
                 .build();
+    }
+
+    private <T> T readProcessInputStream(ProcessBuilder processBuilder, Class<T> clazz) {
+        try (CloseableProcess closeableProcess = new CloseableProcess(processBuilder.start());
+             InputStream inputStream = closeableProcess.getInputStream();
+             InputStream errorStream = closeableProcess.getErrorStream()) {
+            T t = readInputStream(inputStream, clazz);
+            if (errorStream.readAllBytes().length != 0) {
+                throw new UnableToDownloadException("Unexpected error during url validation");
+            }
+            return t;
+        } catch (IOException | JsonParseException e) {
+            throw new UnableToDownloadException("Unexpected error during download");
+        }
     }
 
     private <T> T readInputStream(InputStream inputStream, Class<T> clazz) throws IOException, JsonParseException {
