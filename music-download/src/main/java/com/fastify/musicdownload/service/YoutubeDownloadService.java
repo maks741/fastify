@@ -4,6 +4,7 @@ import com.fastify.musicdownload.exception.InvalidUrlException;
 import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.DownloadResult;
 import com.fastify.musicdownload.model.PreDownloadValidationResult;
+import com.fastify.musicdownload.model.dto.DownloadResultDto;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
 import com.fastify.musicdownload.util.CloseableProcess;
 import com.google.gson.Gson;
@@ -48,7 +49,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     }
 
     @Override
-    public void download(MusicDownloadDto musicDownloadDto) {
+    public DownloadResultDto download(MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
         validateYoutubeUrl(youtubeUrl);
 
@@ -82,12 +83,19 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 thumbnailFormat
         );
 
+        DownloadResult downloadResult;
         try (CloseableProcess closeableProcess = new CloseableProcess(processBuilder.start());
              InputStream inputStream = closeableProcess.getInputStream()) {
-            DownloadResult downloadResult = readInputStream(inputStream, DownloadResult.class);
+            downloadResult = readInputStream(inputStream, DownloadResult.class);
         } catch (IOException | JsonParseException e) {
             throw new UnableToDownloadException("Unexpected error during download");
         }
+
+        return DownloadResultDto.builder()
+                .videoId(downloadResult.videoId())
+                .uploader(downloadResult.uploader())
+                .title(downloadResult.title())
+                .build();
     }
 
     private <T> T readInputStream(InputStream inputStream, Class<T> clazz) throws IOException, JsonParseException {

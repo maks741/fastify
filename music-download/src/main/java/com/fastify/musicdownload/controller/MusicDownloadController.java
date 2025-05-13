@@ -1,5 +1,6 @@
 package com.fastify.musicdownload.controller;
 
+import com.fastify.musicdownload.model.dto.DownloadResultDto;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
 import com.fastify.musicdownload.service.MusicDownloadService;
 import jakarta.validation.Valid;
@@ -18,9 +19,8 @@ public class MusicDownloadController {
     private final MusicDownloadService musicDownloadService;
 
     @PostMapping
-    public ResponseEntity<Void> download(@RequestBody @Valid MusicDownloadDto musicDownloadDto) {
-        musicDownloadService.download(musicDownloadDto);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<DownloadResultDto> download(@RequestBody @Valid MusicDownloadDto musicDownloadDto) {
+        return ResponseEntity.ok().body(musicDownloadService.download(musicDownloadDto));
     }
 
 }
