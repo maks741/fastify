@@ -1,5 +1,6 @@
 package com.fastify.musicdownload.service;
 
+import com.fastify.musicdownload.exception.DownloadTooLargeException;
 import com.fastify.musicdownload.exception.InvalidUrlException;
 import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.DownloadResult;
@@ -28,6 +29,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final String youtubeDownloadScriptName;
     private final String youtubeValidateScriptName;
     private final String scriptResourcePath;
+    private final Long downloadSizeThresholdMb;
     private final S3Service s3Service;
 
     public YoutubeDownloadService(
@@ -37,6 +39,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
             @Value("${download.scripts.download}") String youtubeDownloadScriptName,
             @Value("${download.scripts.validate}") String youtubeValidateScriptName,
             @Value("${download.scripts.resource-path}") String scriptResourcePath,
+            @Value("${download.size.threshold.mb}") Long downloadSizeThresholdMb,
             S3Service s3Service
     ) {
         this.outputPath = outputPath;
@@ -45,6 +48,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         this.youtubeDownloadScriptName = youtubeDownloadScriptName;
         this.youtubeValidateScriptName = youtubeValidateScriptName;
         this.scriptResourcePath = scriptResourcePath;
+        this.downloadSizeThresholdMb = downloadSizeThresholdMb;
         this.s3Service = s3Service;
     }
 
@@ -60,8 +64,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         PreDownloadValidationResult preDownloadValidationResult = readProcessInputStream(validateDownloadScriptName, PreDownloadValidationResult.class);
 
-        if (preDownloadValidationResult.filesizeMb() > 100) {
-            throw new RuntimeException();
+        if (preDownloadValidationResult.filesizeMb() > downloadSizeThresholdMb) {
+            throw new DownloadTooLargeException("Files larger then " + downloadSizeThresholdMb + "MB are not supported");
         }
 
         ProcessBuilder processBuilder = buildScriptProcess(
