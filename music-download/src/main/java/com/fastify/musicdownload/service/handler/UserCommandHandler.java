@@ -1,7 +1,7 @@
 package com.fastify.musicdownload.service.handler;
 
-public class UserCommandHandler {
+import com.fastify.musicdownload.model.command.UserCommand;
 
-
-
+public interface UserCommandHandler {
+    void handle(UserCommand userCommand);
 }
