@@ -20,12 +20,9 @@ spring:
         transaction.state.log.replication.factor: 3
         transaction.state.log.min.isr: 3
     consumer:
-      group-id: 'auth'
+      group-id: 'music-download'
       bootstrap-servers: localhost:9092, localhost:9094, localhost:9096
       enable-auto-commit: true
-    producer:
-      bootstrap-servers: localhost:9092, localhost:9094, localhost:9096
-      acks: 2
     topics:
       - name: 'user-command'
         partitions: 3
