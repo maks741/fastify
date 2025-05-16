@@ -4,6 +4,6 @@ auth/target
 
 user/target
 
-upload/out
-upload/target
+download/out
+download/target
 
