@@ -1,12 +1,12 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:7000/auth
-    password: postgres
     username: postgres
+    password: postgres
   jpa:
     hibernate:
       ddl-auto: validate
   liquibase:
     url: jdbc:postgresql://localhost:7000/auth
-    password: postgres
     user: postgres
+    password: postgres

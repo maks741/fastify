@@ -1,0 +1,6 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/logs/create-user-table.yaml
+  - include:
+      file: db/changelog/logs/create-music-table.yaml
+

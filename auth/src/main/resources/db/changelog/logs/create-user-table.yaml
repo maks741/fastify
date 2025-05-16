@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-users-table-1
+      id: create-user-table-1
       author: Maksym Kozak
       changes:
         - createTable:

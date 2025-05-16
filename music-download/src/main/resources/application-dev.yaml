@@ -1,6 +1,19 @@
 server:
   port: 8060
 
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:7000/music_download
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    url: jdbc:postgresql://localhost:7000/music_download
+    user: postgres
+    password: postgres
+
 download:
   size:
     threshold:
@@ -14,7 +27,6 @@ download:
     resource-path: '/script'
     validate: './youtube.vldt'
     download: './youtube.dwnld'
-
 
 aws:
   region: 'eu-north-1'
