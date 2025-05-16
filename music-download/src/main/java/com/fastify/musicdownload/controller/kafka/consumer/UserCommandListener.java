@@ -26,7 +26,9 @@ public class UserCommandListener {
     @KafkaListener(topics = "${spring.kafka.topics[0].name}", containerFactory = "kafkaListenerContainerFactory")
     public void consumeUserCommand(ConsumerRecord<String, String> record) {
         var command = extractUserCommand(record);
+        var handler = userCommandHandlerMap.get(command);
         
+        handler.handle();
     }
 
     private UserCommand extractUserCommand(ConsumerRecord<String, String> record) {
