@@ -29,4 +29,8 @@ public class Music {
     @ManyToOne
     private User user;
 
+    public Music(String url, User user) {
+        this.url = url;
+        this.user = user;
+    }
 }

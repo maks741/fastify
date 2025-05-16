@@ -1,14 +1,12 @@
 package com.fastify.musicdownload.service;
 
 import com.fastify.musicdownload.exception.DownloadTooLargeException;
-import com.fastify.musicdownload.exception.DuplicateDownloadException;
 import com.fastify.musicdownload.exception.InvalidUrlException;
 import com.fastify.musicdownload.exception.UnableToDownloadException;
 import com.fastify.musicdownload.model.DownloadResult;
 import com.fastify.musicdownload.model.PreDownloadValidationResult;
 import com.fastify.musicdownload.model.dto.DownloadResultDto;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
-import com.fastify.musicdownload.model.entity.Music;
 import com.fastify.musicdownload.model.entity.User;
 import com.fastify.musicdownload.util.CloseableProcess;
 import com.google.gson.Gson;
@@ -33,6 +31,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final String youtubeValidateScriptName;
     private final String scriptResourcePath;
     private final Long downloadSizeThresholdMb;
+    private final UserService userService;
     private final S3Service s3Service;
 
     public YoutubeDownloadService(
@@ -43,6 +42,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
             @Value("${download.scripts.validate}") String youtubeValidateScriptName,
             @Value("${download.scripts.resource-path}") String scriptResourcePath,
             @Value("${download.size.threshold.mb}") Long downloadSizeThresholdMb,
+            UserService userService,
             S3Service s3Service
     ) {
         this.outputPath = outputPath;
@@ -52,6 +52,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         this.youtubeValidateScriptName = youtubeValidateScriptName;
         this.scriptResourcePath = scriptResourcePath;
         this.downloadSizeThresholdMb = downloadSizeThresholdMb;
+        this.userService = userService;
         this.s3Service = s3Service;
     }
 
@@ -59,13 +60,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     public DownloadResultDto download(User user, MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
         validateYoutubeUrl(youtubeUrl);
-
-        if (user.getPlaylist()
-                .stream()
-                .map(Music::getUrl)
-                .toList().contains(youtubeUrl)) {
-            throw new DuplicateDownloadException("Cannot download same video multiple times");
-        }
+        userService.addDownloadedMusic(user, youtubeUrl);
 
         ProcessBuilder validateDownloadScriptName = buildScriptProcess(
                 youtubeValidateScriptName,

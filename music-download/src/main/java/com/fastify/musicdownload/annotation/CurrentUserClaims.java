@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to inject {@link com.fastify.musicdownload.model.entity.User} into controller methods.
+ * Annotation used to inject {@link com.fastify.musicdownload.model.dto.user.UserClaims} into controller methods.
  * Resolved by {@link UserClaimsArgumentResolver}
  */
 @Retention(RetentionPolicy.RUNTIME)

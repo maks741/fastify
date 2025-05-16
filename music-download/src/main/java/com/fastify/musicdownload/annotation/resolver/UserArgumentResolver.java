@@ -1,10 +1,12 @@
 package com.fastify.musicdownload.annotation.resolver;
 
-import com.fastify.musicdownload.annotation.CurrentUserClaims;
+import com.fastify.musicdownload.annotation.CurrentUser;
 import com.fastify.musicdownload.constant.AppConstant;
 import com.fastify.musicdownload.exception.NoJwtException;
 import com.fastify.musicdownload.model.dto.user.UserClaims;
+import com.fastify.musicdownload.model.entity.User;
 import com.fastify.musicdownload.security.JwtService;
+import com.fastify.musicdownload.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -17,24 +19,25 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver {
-
+public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtService jwtService;
+    private final UserService userService;
 
     @Override
     public boolean supportsParameter(@NonNull MethodParameter parameter) {
-        return parameter.getParameterAnnotation(CurrentUserClaims.class) != null
-                && parameter.getParameterType().isAssignableFrom(UserClaims.class);
+        return parameter.getParameterAnnotation(CurrentUser.class) != null
+                && parameter.getParameterType().isAssignableFrom(User.class);
     }
 
     @Override
-    public UserClaims resolveArgument(
+    public User resolveArgument(
             @NonNull MethodParameter parameter,
             ModelAndViewContainer mavContainer,
             @NonNull NativeWebRequest webRequest,
             WebDataBinderFactory binderFactory
     ) {
         String jwt = jwtService.extractJwt(webRequest);
-        return jwtService.extractUserClaims(jwt);
+        UserClaims userClaims = jwtService.extractUserClaims(jwt);
+        return userService.findById(userClaims.userId());
     }
 }

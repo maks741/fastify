@@ -1,12 +1,16 @@
 package com.fastify.musicdownload.security;
 
+import com.fastify.musicdownload.constant.AppConstant;
+import com.fastify.musicdownload.exception.NoJwtException;
 import com.fastify.musicdownload.model.dto.user.UserClaims;
 import com.fastify.musicdownload.model.enumeration.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.NativeWebRequest;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -48,6 +52,14 @@ public class JwtService {
     public <T> T extractClaims(String jwt, Function<Claims, T> claimsResolver) {
         Claims claims = extractClaims(jwt);
         return claimsResolver.apply(claims);
+    }
+
+    public String extractJwt(NativeWebRequest webRequest) {
+        String authorizationHeader = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstant.BEARER_TOKEN_PREFIX)) {
+            throw new NoJwtException("No JWT found in request header");
+        }
+        return authorizationHeader.substring(AppConstant.BEARER_TOKEN_PREFIX.length());
     }
 
     private Claims extractClaims(String jwt) {

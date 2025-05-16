@@ -1,6 +1,6 @@
 package com.fastify.musicdownload.controller;
 
-import com.fastify.musicdownload.annotation.CurrentUserClaims;
+import com.fastify.musicdownload.annotation.CurrentUser;
 import com.fastify.musicdownload.model.dto.DownloadResultDto;
 import com.fastify.musicdownload.model.dto.MusicDownloadDto;
 import com.fastify.musicdownload.model.entity.User;
@@ -22,7 +22,7 @@ public class MusicDownloadController {
 
     @PostMapping
     public ResponseEntity<DownloadResultDto> download(
-            @CurrentUserClaims User user,
+            @CurrentUser User user,
             @RequestBody @Valid MusicDownloadDto musicDownloadDto
     ) {
         return ResponseEntity.ok().body(musicDownloadService.download(user, musicDownloadDto));
