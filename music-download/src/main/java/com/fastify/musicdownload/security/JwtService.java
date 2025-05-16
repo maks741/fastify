@@ -41,7 +41,7 @@ public class JwtService {
         return extractClaims(jwt, claims -> new UserClaims(
                 claims.get(userIdClaimName, Long.class),
                 claims.getSubject(),
-                claims.get(userRoleClaimName, Role.class)
+                Role.valueOf(claims.get(userRoleClaimName, String.class))
         ));
     }
 
