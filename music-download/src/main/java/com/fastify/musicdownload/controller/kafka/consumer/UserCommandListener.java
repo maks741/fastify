@@ -9,6 +9,6 @@ public class UserCommandListener {
 
     @KafkaListener(topics = "${spring.kafka.topics[0].name}", containerFactory = "kafkaListenerContainerFactory")
     public void consumeUserCommand(ConsumerRecord<String, String> record) {
-        record.headers().lastHeader()
+
     }
 }
