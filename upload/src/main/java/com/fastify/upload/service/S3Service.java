@@ -45,8 +45,8 @@ public class S3Service {
         Path audioPath = Paths.get(downloadResult.audioPath());
         Path thumbnailPath = Paths.get(downloadResult.thumbnailPath());
 
-        checkExists(audioPath);
-        checkExists(thumbnailPath);
+        verifyExists(audioPath);
+        verifyExists(thumbnailPath);
 
         PutObjectRequest putAudioFileRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -95,7 +95,7 @@ public class S3Service {
         return bytes;
     }
 
-    private void checkExists(Path path) {
+    private void verifyExists(Path path) {
         if (!Files.exists(path)) {
             throw new FileDoesNotExistException("File does not exist by that path: " + path);
         }
