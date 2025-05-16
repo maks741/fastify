@@ -1,5 +1,7 @@
 package com.fastify.auth.security;
 
+import com.fastify.auth.model.entity.User;
+import com.fastify.auth.model.enumeration.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -7,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
@@ -17,17 +18,35 @@ public class JwtService {
 
     private final String jwtSigningKey;
     private final Long jwtExpirationPeriod;
+    private final String userIdClaimName;
+    private final String userEmailClaimName;
+    private final String userRoleClaimName;
 
     public JwtService(
             @Value("${jwt.signing.key}") String jwtSigningKey,
-            @Value("${jwt.expiration.period}") Long jwtExpirationPeriod
+            @Value("${jwt.expiration.period}") Long jwtExpirationPeriod,
+            @Value("${jwt.claims.user.id}") String userIdClaimName,
+            @Value("${jwt.claims.user.email}") String userEmailClaimName,
+            @Value("${jwt.claims.user.role}") String userRoleClaimName
     ) {
         this.jwtSigningKey = jwtSigningKey;
         this.jwtExpirationPeriod = jwtExpirationPeriod;
+        this.userIdClaimName = userIdClaimName;
+        this.userEmailClaimName = userEmailClaimName;
+        this.userRoleClaimName = userRoleClaimName;
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(Collections.emptyMap(), userDetails);
+    public String generateToken(User user) {
+        Long userId = user.getId();
+        String userEmail = user.getEmail();
+        Role userRole = user.getRole();
+        Map<String, Object> claims = Map.of(
+                userIdClaimName, userId,
+                userEmailClaimName, userEmail,
+                userRoleClaimName, userRole
+        );
+
+        return generateToken(claims, user);
     }
 
     public String generateToken(

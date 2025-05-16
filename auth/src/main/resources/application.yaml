@@ -9,3 +9,8 @@ jwt:
     key: ${JWT_SIGNING_KEY}
   expiration:
     period: 21600000
+  claims:
+    user:
+      id: 'userId'
+      email: 'userEmail'
+      role: 'userRole'
