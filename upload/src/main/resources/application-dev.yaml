@@ -50,3 +50,9 @@ aws:
   region: 'eu-north-1'
   bucket:
     name: 'maks741.fastify'
+  objects:
+    name:
+      separator: '/'
+    suffix:
+      audio: 'audio'
+      thumbnail: 'thumbnail'

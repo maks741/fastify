@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -82,6 +83,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         );
 
         DownloadResult downloadResult = readProcessInputStream(processBuilder, DownloadResult.class);
+        s3Service.store(user.getId(), downloadResult);
 
         return DownloadResultDto.builder()
                 .videoId(downloadResult.videoId())

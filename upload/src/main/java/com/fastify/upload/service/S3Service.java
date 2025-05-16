@@ -1,5 +1,7 @@
 package com.fastify.upload.service;
 
+import com.fastify.upload.exception.FileDoesNotExistException;
+import com.fastify.upload.model.DownloadResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -8,22 +10,55 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 public class S3Service {
 
     private final S3Client s3Client;
     private final String bucket;
+    private final String objectNameSeparator;
+    private final String audioSuffix;
+    private final String thumbnailSuffix;
 
     public S3Service(
             S3Client s3Client,
-            @Value("${aws.bucket.name}") String bucket
+            @Value("${aws.bucket.name}") String bucket,
+            @Value("${aws.objects.name.separator}")String objectNameSeparator,
+            @Value("${aws.objects.suffix.audio}") String audioSuffix,
+            @Value("${aws.objects.suffix.thumbnail}") String thumbnailSuffix
     ) {
         this.s3Client = s3Client;
         this.bucket = bucket;
+        this.objectNameSeparator = objectNameSeparator;
+        this.audioSuffix = audioSuffix;
+        this.thumbnailSuffix = thumbnailSuffix;
+    }
+
+    public void store(Long userId, DownloadResult downloadResult) {
+        String bucketBaseKey = userId + objectNameSeparator + downloadResult.videoId() + objectNameSeparator;
+        String audioFileBucketKey = bucketBaseKey + audioSuffix;
+        String thumbnailFileBucketKey = bucketBaseKey + thumbnailSuffix;
+        Path audioPath = Paths.get(downloadResult.audioPath());
+        Path thumbnailPath = Paths.get(downloadResult.thumbnailPath());
+
+        checkExists(audioPath);
+        checkExists(thumbnailPath);
+
+        PutObjectRequest putAudioFileRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(audioFileBucketKey)
+                .build();
+        PutObjectRequest putThumbnailFileRequest = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(thumbnailFileBucketKey)
+                .build();
+
+        s3Client.putObject(putAudioFileRequest, audioPath);
+        s3Client.putObject(putThumbnailFileRequest, thumbnailPath);
     }
 
     public void putObject(String key, Path filePath) {
@@ -58,5 +93,11 @@ public class S3Service {
             throw new RuntimeException(e);
         }
         return bytes;
+    }
+
+    private void checkExists(Path path) {
+        if (!Files.exists(path)) {
+            throw new FileDoesNotExistException("File does not exist by that path: " + path);
+        }
     }
 }
