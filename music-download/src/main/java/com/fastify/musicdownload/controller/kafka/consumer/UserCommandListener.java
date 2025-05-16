@@ -27,8 +27,7 @@ public class UserCommandListener {
     public void consumeUserCommand(ConsumerRecord<String, String> record) {
         var command = extractUserCommand(record);
         var handler = userCommandHandlerMap.get(command);
-        
-        handler.handle();
+        handler.handle(record.value());
     }
 
     private UserCommand extractUserCommand(ConsumerRecord<String, String> record) {
