@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,5 +24,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Music> playlist;
+
+    public User(Long id) {
+        this.id = id;
+        this.playlist = new ArrayList<>();
+    }
 
 }
