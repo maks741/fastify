@@ -12,5 +12,4 @@ jwt:
   claims:
     user:
       id: 'userId'
-      email: 'userEmail'
       role: 'userRole'

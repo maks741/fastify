@@ -1,13 +1,10 @@
 package com.fastify.musicdownload.annotation.resolver;
 
-import com.fastify.musicdownload.annotation.CurrentUser;
+import com.fastify.musicdownload.annotation.CurrentUserClaims;
 import com.fastify.musicdownload.constant.AppConstant;
-import com.fastify.musicdownload.constant.JwtConstant;
-import com.fastify.musicdownload.exception.ClaimNotFoundException;
 import com.fastify.musicdownload.exception.NoJwtException;
-import com.fastify.musicdownload.model.entity.User;
+import com.fastify.musicdownload.model.dto.user.UserClaims;
 import com.fastify.musicdownload.security.JwtService;
-import com.fastify.musicdownload.service.UserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -20,19 +17,18 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 @RequiredArgsConstructor
-public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
+public class UserClaimsArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final JwtService jwtService;
-    private final UserService userService;
 
     @Override
     public boolean supportsParameter(@NonNull MethodParameter parameter) {
-        return parameter.getParameterAnnotation(CurrentUser.class) != null
-                && parameter.getParameterType().isAssignableFrom(User.class);
+        return parameter.getParameterAnnotation(CurrentUserClaims.class) != null
+                && parameter.getParameterType().isAssignableFrom(UserClaims.class);
     }
 
     @Override
-    public Object resolveArgument(@NonNull MethodParameter parameter,
+    public UserClaims resolveArgument(@NonNull MethodParameter parameter,
                                   ModelAndViewContainer mavContainer,
                                   @NonNull NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory
@@ -42,12 +38,6 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             throw new NoJwtException("No JWT found in request header");
         }
         String jwt = authorizationHeader.substring(AppConstant.BEARER_TOKEN_PREFIX.length());
-        Long userId = jwtService.extractClaims(jwt, claims -> claims.get(JwtConstant.JWT_USER_ID_CLAIM, Long.class));
-
-        if (userId == null) {
-            throw new ClaimNotFoundException("Claim userId was not found in JWT");
-        }
-
-        return userService.findById(userId);
+        return jwtService.extractUserClaims(jwt);
     }
 }
