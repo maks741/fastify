@@ -1,5 +1,6 @@
 package com.fastify.auth.config;
 
+import lombok.Setter;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -9,9 +10,11 @@ import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.kafka")
+// FOR IT TO WORK VERY IMPORTANT TO HAVE A SETTER HERE
+@Setter
 public class KafkaTopicConfig {
 
-    // I assume it will go and read spring.kafka.topics property
+    // It will go and read spring.kafka.topics property
     // and map the values of that property to that list
     private List<TopicConfig> topics;
 
@@ -22,10 +25,5 @@ public class KafkaTopicConfig {
                 .toList();
     }
 
-    record TopicConfig(
-            String name,
-            int partitions,
-            short replicationFactor
-    ) {
-    }
+    record TopicConfig(String name, int partitions, short replicationFactor) {}
 }

@@ -1,18 +1,17 @@
 package com.fastify.musicdownload.config;
 
+import lombok.Setter;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.util.List;
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.kafka")
+@Setter
 public class KafkaTopicConfig {
 
-    // I assume it will go and read spring.kafka.topics property
-    // and map the values of that property to that list
     private List<TopicConfig> topics;
 
     @Bean
@@ -22,10 +21,5 @@ public class KafkaTopicConfig {
                 .toList();
     }
 
-    record TopicConfig(
-            String name,
-            int partitions,
-            short replicationFactor
-    ) {
-    }
+    record TopicConfig(String name, int partitions, short replicationFactor) {}
 }
