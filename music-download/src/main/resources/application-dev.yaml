@@ -27,6 +27,8 @@ spring:
       - name: 'user-command'
         partitions: 3
         replication-factor: 3
+    headers:
+      command: 'command'
 
 download:
   size:
