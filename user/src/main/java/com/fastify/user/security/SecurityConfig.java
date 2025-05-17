@@ -23,7 +23,7 @@ public class SecurityConfig {
 
         httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/user/test")
+                        .requestMatchers("/user/**")
                         .authenticated()
         );
 

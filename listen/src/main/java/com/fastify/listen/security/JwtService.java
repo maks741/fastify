@@ -49,17 +49,17 @@ public class JwtService {
         return tokenNotExpired(jwt);
     }
 
-    public <T> T extractClaims(String jwt, Function<Claims, T> claimsResolver) {
-        Claims claims = extractClaims(jwt);
-        return claimsResolver.apply(claims);
-    }
-
     public String extractJwt(NativeWebRequest webRequest) {
         String authorizationHeader = webRequest.getHeader(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader == null || !authorizationHeader.startsWith(AppConstant.BEARER_TOKEN_PREFIX)) {
             throw new NoJwtException("No JWT found in request header");
         }
         return authorizationHeader.substring(AppConstant.BEARER_TOKEN_PREFIX.length());
+    }
+
+    private  <T> T extractClaims(String jwt, Function<Claims, T> claimsResolver) {
+        Claims claims = extractClaims(jwt);
+        return claimsResolver.apply(claims);
     }
 
     private Claims extractClaims(String jwt) {
@@ -80,5 +80,4 @@ public class JwtService {
         byte[] keyBytes = jwtSigningKey.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.fastify.download.security;
 
+import com.fastify.download.constant.AppConstant;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String bearerPrefix = "Bearer ";
+        String bearerPrefix = AppConstant.BEARER_TOKEN_PREFIX;
         String jwt;
 
         if (authorizationHeader == null || !authorizationHeader.startsWith(bearerPrefix)) {
