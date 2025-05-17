@@ -10,3 +10,6 @@ aws:
       separator: '/'
     suffix:
       audio: 'audio'
+  url:
+    expiry:
+      seconds: 20
