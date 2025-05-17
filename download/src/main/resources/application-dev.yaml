@@ -25,8 +25,16 @@ spring:
       enable-auto-commit: true
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: localhost:9092, localhost:9094, localhost:9096
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
     topics:
       - name: 'user-command'
+        partitions: 3
+        replication-factor: 3
+      - name: 'music-command'
         partitions: 3
         replication-factor: 3
     headers:

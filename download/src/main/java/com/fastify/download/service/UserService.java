@@ -19,7 +19,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found by id: " + id));
     }
 
-    public void addDownloadedMusic(User user, String musicUrl) {
+    public Music addDownloadedMusic(User user, String musicUrl) {
         if (user.getPlaylist()
                 .stream()
                 .map(Music::getUrl)
@@ -30,5 +30,7 @@ public class UserService {
         user.getPlaylist().add(music);
 
         userRepository.save(user);
+
+        return music;
     }
 }

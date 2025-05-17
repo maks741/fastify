@@ -1,5 +1,6 @@
 package com.fastify.download.service;
 
+import com.fastify.download.controller.kafka.producer.MusicCommandProducer;
 import com.fastify.download.exception.DownloadTooLargeException;
 import com.fastify.download.exception.InvalidUrlException;
 import com.fastify.download.exception.UnableToDownloadException;
@@ -7,7 +8,9 @@ import com.fastify.download.model.DownloadResult;
 import com.fastify.download.model.PreDownloadValidationResult;
 import com.fastify.download.model.dto.DownloadResultDto;
 import com.fastify.download.model.dto.MusicDownloadDto;
+import com.fastify.download.model.entity.Music;
 import com.fastify.download.model.entity.User;
+import com.fastify.download.model.event.MusicDownloadedEvent;
 import com.fastify.download.util.CloseableProcess;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -33,6 +36,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final Long downloadSizeThresholdMb;
     private final UserService userService;
     private final S3Service s3Service;
+    private final MusicCommandProducer musicCommandProducer;
 
     public YoutubeDownloadService(
             @Value("${download.out.path}") String outputPath,
@@ -43,7 +47,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
             @Value("${download.scripts.resource-path}") String scriptResourcePath,
             @Value("${download.size.threshold.mb}") Long downloadSizeThresholdMb,
             UserService userService,
-            S3Service s3Service
+            S3Service s3Service, MusicCommandProducer musicCommandProducer
     ) {
         this.outputPath = outputPath;
         this.audioFormat = audioFormat;
@@ -54,13 +58,14 @@ public class YoutubeDownloadService implements MusicDownloadService {
         this.downloadSizeThresholdMb = downloadSizeThresholdMb;
         this.userService = userService;
         this.s3Service = s3Service;
+        this.musicCommandProducer = musicCommandProducer;
     }
 
     @Override
     public DownloadResultDto download(User user, MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
         validateYoutubeUrl(youtubeUrl);
-        userService.addDownloadedMusic(user, youtubeUrl);
+        Music music = userService.addDownloadedMusic(user, youtubeUrl);
 
         ProcessBuilder validateDownloadScriptName = buildScriptProcess(
                 youtubeValidateScriptName,
@@ -83,6 +88,9 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         DownloadResult downloadResult = readProcessInputStream(processBuilder, DownloadResult.class);
         s3Service.store(user.getId(), downloadResult);
+
+        MusicDownloadedEvent musicDownloadedEvent = new MusicDownloadedEvent(user.getId(), music.getId(), downloadResult.videoId(), music.getUrl());
+        musicCommandProducer.sendMusicDownloadedEvent(musicDownloadedEvent);
 
         return DownloadResultDto.builder()
                 .videoId(downloadResult.videoId())

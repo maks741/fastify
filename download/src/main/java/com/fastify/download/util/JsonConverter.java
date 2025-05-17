@@ -10,6 +10,14 @@ public class JsonConverter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    public String toJson(Object o) {
+        try {
+            return objectMapper.writeValueAsString(o);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public <T> T convert(String json, Class<T> clazz) {
         try {
             return objectMapper.readValue(json, clazz);

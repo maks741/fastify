@@ -37,5 +37,4 @@ public class UserCommandProducer {
                 .setHeader(commandHeader, userCommand.name())
                 .build();
     }
-
 }
