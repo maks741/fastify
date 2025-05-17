@@ -1,0 +1,11 @@
+spring:
+  profiles:
+    active: dev
+
+jwt:
+  signing:
+    key: ${JWT_SIGNING_KEY}
+  claims:
+    user:
+      id: 'userId'
+      role: 'userRole'

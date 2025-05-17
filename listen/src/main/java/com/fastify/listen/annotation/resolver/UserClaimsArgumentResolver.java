@@ -1,8 +1,8 @@
-package com.fastify.download.annotation.resolver;
+package com.fastify.listen.annotation.resolver;
 
-import com.fastify.download.annotation.CurrentUserClaims;
-import com.fastify.download.model.dto.user.UserClaims;
-import com.fastify.download.security.JwtService;
+import com.fastify.listen.annotation.CurrentUserClaims;
+import com.fastify.listen.model.dto.user.UserClaims;
+import com.fastify.listen.security.JwtService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
