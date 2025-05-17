@@ -1,8 +1,8 @@
-package com.fastify.download.util;
+package com.fastify.user.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fastify.download.exception.BadPayloadException;
+import com.fastify.user.exception.BadPayloadException;
 import org.springframework.stereotype.Component;
 
 @Component

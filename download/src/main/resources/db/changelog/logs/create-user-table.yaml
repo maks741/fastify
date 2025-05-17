@@ -11,4 +11,3 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     primaryKey: true
-                  autoIncrement: true

@@ -1,4 +1,4 @@
-package com.fastify.download.model.entity;
+package com.fastify.user.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
