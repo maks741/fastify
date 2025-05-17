@@ -23,7 +23,7 @@ public class SecurityConfig {
 
         httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/listen")
+                        .requestMatchers("/listen/**")
                         .authenticated()
         );
 
