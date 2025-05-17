@@ -3,14 +3,14 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:7000/music_download
+    url: jdbc:postgresql://localhost:7000/download
     username: postgres
     password: postgres
   jpa:
     hibernate:
       ddl-auto: validate
   liquibase:
-    url: jdbc:postgresql://localhost:7000/music_download
+    url: jdbc:postgresql://localhost:7000/download
     user: postgres
     password: postgres
   kafka:

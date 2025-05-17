@@ -1,9 +1,9 @@
-package com.fastify.download.config;
+package com.fastify.user.config;
 
-import com.fastify.download.model.command.UserCommand;
-import com.fastify.download.service.handler.CreateUserCommandHandler;
-import com.fastify.download.service.handler.UnknownUserCommandHandler;
-import com.fastify.download.service.handler.UserCommandHandler;
+import com.fastify.user.model.command.UserCommand;
+import com.fastify.user.service.handler.CreateUserCommandHandler;
+import com.fastify.user.service.handler.UnknownUserCommandHandler;
+import com.fastify.user.service.handler.UserCommandHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-table-1
+      author: Maksym Kozak
+      changes:
+        - createTable:
+            tableName: _user
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true

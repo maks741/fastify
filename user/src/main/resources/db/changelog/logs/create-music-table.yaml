@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-music-table-1
+      author: Maksym Kozak
+      changes:
+        - createTable:
+            tableName: music
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: video_id
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: "fk_music_users"
+                    referencedTableName: _user
+                    referencedColumnNames: id
