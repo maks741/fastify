@@ -1,5 +1,6 @@
 package com.fastify.user.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,12 +30,6 @@ public class Music {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String url;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private User user;
-
-    public Music(String videoId, String url, User user) {
-        this.videoId = videoId;
-        this.url = url;
-        this.user = user;
-    }
 }

@@ -1,7 +1,7 @@
 package com.fastify.user.controller.kafka.consumer;
 
 import com.fastify.user.model.command.UserCommand;
-import com.fastify.user.service.handler.UserCommandHandler;
+import com.fastify.user.service.handler.CommandHandler;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,11 +12,11 @@ import java.util.Map;
 @Component
 public class UserCommandListener {
 
-    private final Map<UserCommand, UserCommandHandler> userCommandHandlerMap;
+    private final Map<UserCommand, CommandHandler> userCommandHandlerMap;
     private final String commandHeader;
 
     public UserCommandListener(
-            Map<UserCommand, UserCommandHandler> userCommandHandlerMap,
+            Map<UserCommand, CommandHandler> userCommandHandlerMap,
             @Value("${spring.kafka.headers.command}") String commandHeader
     ) {
         this.userCommandHandlerMap = userCommandHandlerMap;

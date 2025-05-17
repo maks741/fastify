@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateUserCommandHandler implements UserCommandHandler {
+public class CreateUserCommandHandler implements CommandHandler {
 
     private final JsonConverter jsonConverter;
     private final UserRepository userRepository;

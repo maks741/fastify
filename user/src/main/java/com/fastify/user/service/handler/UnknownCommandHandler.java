@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class UnknownUserCommandHandler implements UserCommandHandler {
+public class UnknownCommandHandler implements CommandHandler {
     @Override
     public void handle(String payload) {
         throw new UnknownCommandException("Received unknown command");

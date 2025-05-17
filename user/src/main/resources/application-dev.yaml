@@ -26,7 +26,8 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     topics:
-      - name: user-command
+      - name: 'user-command'
+      - name: 'music-command'
     headers:
       command: 'command'
 

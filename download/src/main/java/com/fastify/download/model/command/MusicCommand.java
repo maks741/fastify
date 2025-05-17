@@ -8,13 +8,4 @@ public enum MusicCommand {
     LISTEN,
     DELETE,
     UNKNOWN;
-
-    public MusicCommand fromString(String s) {
-        try {
-            return valueOf(s);
-        } catch (IllegalArgumentException e) {
-            log.warn("Received unknown command: {}", s);
-            return UNKNOWN;
-        }
-    }
 }
