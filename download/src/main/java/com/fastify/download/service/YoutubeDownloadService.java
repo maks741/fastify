@@ -17,6 +17,8 @@ import com.google.gson.JsonParseException;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -62,6 +64,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     }
 
     @Override
+    @Transactional
     public DownloadResultDto download(User user, MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
         validateYoutubeUrl(youtubeUrl);

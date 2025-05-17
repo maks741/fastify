@@ -4,6 +4,7 @@ import com.fastify.download.exception.DuplicateDownloadException;
 import com.fastify.download.exception.UserNotFoundException;
 import com.fastify.download.model.entity.Music;
 import com.fastify.download.model.entity.User;
+import com.fastify.download.repository.MusicRepository;
 import com.fastify.download.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MusicRepository musicRepository;
 
     public User findById(Long id) {
         return userRepository.findById(id)
@@ -27,6 +29,7 @@ public class UserService {
             throw new DuplicateDownloadException("Cannot download same video multiple times");
         }
         Music music = new Music(musicUrl, user);
+        music = musicRepository.save(music);
         user.getPlaylist().add(music);
 
         userRepository.save(user);
