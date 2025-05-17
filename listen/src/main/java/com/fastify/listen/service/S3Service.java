@@ -59,6 +59,6 @@ public class S3Service {
         }
 
         String downloadUrl = presignedAudioFileRequest.url().toExternalForm();
-        return new ListenResponse(downloadUrl);
+        return new ListenResponse(videoId, downloadUrl);
     }
 }

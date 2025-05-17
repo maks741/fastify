@@ -97,6 +97,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
 
         return DownloadResultDto.builder()
                 .videoId(downloadResult.videoId())
+                .url(youtubeUrl)
                 .uploader(downloadResult.uploader())
                 .title(downloadResult.title())
                 .build();
