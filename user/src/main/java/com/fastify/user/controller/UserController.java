@@ -23,7 +23,6 @@ public class UserController {
     public ResponseEntity<List<MusicDto>> findAllMusicOfUser(
             @CurrentUserClaims UserClaims userClaims
     ) {
-        return ResponseEntity.ok(musicService.findAllByUserId(userClaims.userId()));
+        return ResponseEntity.ok(musicService.findAllByUserId(userClaims));
     }
-
 }
