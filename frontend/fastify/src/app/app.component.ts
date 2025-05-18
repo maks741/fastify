@@ -3,10 +3,20 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  standalone: true,
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  template: `
+    <div class="container">
+      <router-outlet></router-outlet>
+    </div>
+  `,
+  styles: [`
+    .container {
+      width: 100%;
+      height: 100%;
+    }
+  `]
 })
 export class AppComponent {
-  title = 'fastify';
+  title = 'auth-app';
 }
