@@ -25,8 +25,8 @@ public class LocalFileStorageService implements FileStorage {
 
     public LocalFileStorageService(
             @Value("${download.storage.path}") String storagePath,
-            @Value("${aws.objects.suffix.audio}") String audioSuffix,
-            @Value("${aws.objects.suffix.thumbnail}") String thumbnailSuffix,
+            @Value("${local.objects.suffix.audio}") String audioSuffix,
+            @Value("${local.objects.suffix.thumbnail}") String thumbnailSuffix,
             @Value("${download.out.format.audio}") String audioFormat,
             @Value("${download.out.format.thumbnail}") String thumbnailFormat,
             Environment environment
