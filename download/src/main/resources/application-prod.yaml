@@ -1,6 +1,5 @@
 server:
   port: 8060
-  address: 'localhost'
 
 spring:
   datasource:
@@ -50,8 +49,6 @@ download:
     format:
       audio: mp3
       thumbnail: png
-  storage:
-    path: '/home/maks/me/programming/pet/fastify/download/storage/'
   scripts:
     resource-path: '/script'
     validate: './youtube.vldt'

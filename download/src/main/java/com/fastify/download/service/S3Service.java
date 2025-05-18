@@ -1,7 +1,7 @@
 package com.fastify.download.service;
 
-import com.fastify.download.exception.FileDoesNotExistException;
 import com.fastify.download.model.DownloadResult;
+import com.fastify.download.util.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
 
 @Service
@@ -52,11 +50,8 @@ public class S3Service implements FileStorage {
         String bucketBaseKey = userId + objectNameSeparator + downloadResult.videoId() + objectNameSeparator;
         String audioFileBucketKey = bucketBaseKey + audioSuffix;
         String thumbnailFileBucketKey = bucketBaseKey + thumbnailSuffix;
-        Path audioPath = Paths.get(downloadResult.audioPath());
-        Path thumbnailPath = Paths.get(downloadResult.thumbnailPath());
-
-        verifyExists(audioPath);
-        verifyExists(thumbnailPath);
+        Path audioPath = FileUtils.toExistingPath(downloadResult.audioPath());
+        Path thumbnailPath = FileUtils.toExistingPath(downloadResult.thumbnailPath());
 
         PutObjectRequest putAudioFileRequest = PutObjectRequest.builder()
                 .bucket(bucket)
@@ -94,11 +89,5 @@ public class S3Service implements FileStorage {
         }
 
         return presignedThumbnailFileRequest.url().toExternalForm();
-    }
-
-    private void verifyExists(Path path) {
-        if (!Files.exists(path)) {
-            throw new FileDoesNotExistException("File does not exist by that path: " + path);
-        }
     }
 }
