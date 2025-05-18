@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 @Service
-public class S3Service {
+public class S3Service implements FileStorage {
 
     private final S3Client s3Client;
     private final String awsRegion;
@@ -69,7 +69,7 @@ public class S3Service {
         s3Client.putObject(putThumbnailFileRequest, thumbnailPath);
     }
 
-    public String generateSignedThumbnailUrl(Long userId, String videoId) {
+    public String generateThumbnailUrl(Long userId, String videoId) {
         String bucketBaseKey = userId + objectNameSeparator + videoId + objectNameSeparator;
         String thumbnailFileBucketKey = bucketBaseKey + thumbnailSuffix;
         PresignedGetObjectRequest presignedThumbnailFileRequest;

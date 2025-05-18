@@ -4,7 +4,7 @@ import com.fastify.download.annotation.CurrentUser;
 import com.fastify.download.model.dto.DownloadResultDto;
 import com.fastify.download.model.dto.MusicDownloadDto;
 import com.fastify.download.model.entity.User;
-import com.fastify.download.service.MusicDownloadService;
+import com.fastify.download.service.YoutubeDownloadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class MusicDownloadController {
 
-    private final MusicDownloadService musicDownloadService;
+    private final YoutubeDownloadService youtubeDownloadService;
 
     @PostMapping
     public ResponseEntity<DownloadResultDto> download(
             @CurrentUser User user,
             @RequestBody @Valid MusicDownloadDto musicDownloadDto
     ) {
-        return ResponseEntity.ok().body(musicDownloadService.download(user, musicDownloadDto));
+        return ResponseEntity.ok().body(youtubeDownloadService.download(user, musicDownloadDto));
     }
 
 }

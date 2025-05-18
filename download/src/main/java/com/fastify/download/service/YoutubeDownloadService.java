@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class YoutubeDownloadService implements MusicDownloadService {
+public class YoutubeDownloadService {
 
     private final String outputPath;
     private final String audioFormat;
@@ -37,7 +37,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
     private final String scriptResourcePath;
     private final Long downloadSizeThresholdMb;
     private final UserService userService;
-    private final S3Service s3Service;
+    private final FileStorage fileStorage;
     private final MusicCommandProducer musicCommandProducer;
 
     public YoutubeDownloadService(
@@ -49,7 +49,8 @@ public class YoutubeDownloadService implements MusicDownloadService {
             @Value("${download.scripts.resource-path}") String scriptResourcePath,
             @Value("${download.size.threshold.mb}") Long downloadSizeThresholdMb,
             UserService userService,
-            S3Service s3Service, MusicCommandProducer musicCommandProducer
+            FileStorage fileStorage,
+            MusicCommandProducer musicCommandProducer
     ) {
         this.outputPath = outputPath;
         this.audioFormat = audioFormat;
@@ -59,11 +60,10 @@ public class YoutubeDownloadService implements MusicDownloadService {
         this.scriptResourcePath = scriptResourcePath;
         this.downloadSizeThresholdMb = downloadSizeThresholdMb;
         this.userService = userService;
-        this.s3Service = s3Service;
+        this.fileStorage = fileStorage;
         this.musicCommandProducer = musicCommandProducer;
     }
 
-    @Override
     @Transactional
     public DownloadResultDto download(User user, MusicDownloadDto musicDownloadDto) {
         String youtubeUrl = musicDownloadDto.url();
@@ -90,7 +90,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
         );
 
         DownloadResult downloadResult = readProcessInputStream(processBuilder, DownloadResult.class);
-        s3Service.store(user.getId(), downloadResult);
+        fileStorage.store(user.getId(), downloadResult);
 
         MusicDownloadedEvent musicDownloadedEvent = MusicDownloadedEvent.builder()
                 .userId(user.getId())
@@ -102,7 +102,7 @@ public class YoutubeDownloadService implements MusicDownloadService {
                 .build();
         musicCommandProducer.sendMusicDownloadedEvent(musicDownloadedEvent);
 
-        String thumbnailUrl = s3Service.generateSignedThumbnailUrl(user.getId(), downloadResult.videoId());
+        String thumbnailUrl = fileStorage.generateThumbnailUrl(user.getId(), downloadResult.videoId());
 
         return DownloadResultDto.builder()
                 .videoId(downloadResult.videoId())
