@@ -1,15 +1,6 @@
 server:
   port: 8090
 
-aws:
-  region: 'eu-north-1'
-  bucket:
-    name: 'maks741.fastify'
-  objects:
-    name:
-      separator: '/'
-    suffix:
-      audio: 'audio'
-  url:
-    expiry:
-      seconds: 20
+local:
+  storage:
+    host: 'http://localhost:8060/resources/'

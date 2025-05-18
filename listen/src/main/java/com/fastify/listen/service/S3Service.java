@@ -3,6 +3,7 @@ package com.fastify.listen.service;
 import com.fastify.listen.model.dto.ListenResponse;
 import com.fastify.listen.model.dto.user.UserClaims;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -13,7 +14,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import java.time.Duration;
 
 @Service
-public class S3Service {
+@Profile("prod")
+public class S3Service implements FileStorage {
 
     private final String awsRegion;
     private final String bucket;
@@ -35,7 +37,7 @@ public class S3Service {
         this.urlExpirySeconds = urlExpirySeconds;
     }
 
-    public ListenResponse generateSignedUrl(UserClaims userClaims, String videoId) {
+    public ListenResponse generateAudioUrl(UserClaims userClaims, String videoId) {
         String bucketBaseKey = userClaims.userId() + objectNameSeparator + videoId + objectNameSeparator;
         String audioFileBucketKey = bucketBaseKey + audioSuffix;
         PresignedGetObjectRequest presignedAudioFileRequest;
