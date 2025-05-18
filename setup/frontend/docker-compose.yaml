@@ -1,0 +1,8 @@
+services:
+  frontend:
+    container_name: fastify-frontend
+    build:
+      context: ../../frontend/fastify
+      dockerfile: ../../setup/frontend/frontend.dockerfile
+    ports:
+      - '4200:4200'
