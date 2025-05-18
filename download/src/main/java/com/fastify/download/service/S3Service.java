@@ -3,6 +3,7 @@ package com.fastify.download.service;
 import com.fastify.download.exception.FileDoesNotExistException;
 import com.fastify.download.model.DownloadResult;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
 import java.time.Duration;
 
 @Service
+@Profile("prod")
 public class S3Service implements FileStorage {
 
     private final S3Client s3Client;
