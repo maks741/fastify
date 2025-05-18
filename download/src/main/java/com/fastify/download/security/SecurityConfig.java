@@ -38,7 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/download")
                         .authenticated()
                         .requestMatchers("/resources/**")
-                        .authenticated()
+                        // TODO: these request matchers should only be in dev branch
+                        .permitAll()
                         .anyRequest().authenticated()
         );
 
