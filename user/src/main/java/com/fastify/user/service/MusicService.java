@@ -13,13 +13,13 @@ import java.util.List;
 public class MusicService {
 
     private final MusicRepository musicRepository;
-    private final S3Service s3Service;
+    private final FileStorage fileStorage;
 
     public List<MusicDto> findAllByUserId(UserClaims userClaims) {
         Long userId = userClaims.userId();
         return musicRepository.findAllByUserId(userId).stream()
                 .map(music -> {
-                    String thumbnailUrl = s3Service.generateSignedThumbnailUrl(userClaims, music.getVideoId());
+                    String thumbnailUrl = fileStorage.generateThumbnailUrl(userClaims, music.getVideoId());
 
                     return new MusicDto(
                             music.getVideoId(),

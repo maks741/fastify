@@ -31,11 +31,15 @@ spring:
     headers:
       command: 'command'
 
-local:
-  storage:
-    host: 'http://localhost:8060/resources/'
+aws:
+  region: 'eu-north-1'
+  bucket:
+    name: 'maks741.fastify'
   objects:
+    name:
+      separator: '/'
     suffix:
       thumbnail: 'thumbnail'
-    format:
-      thumbnail: png
+  url:
+    expiry:
+      seconds: 20
