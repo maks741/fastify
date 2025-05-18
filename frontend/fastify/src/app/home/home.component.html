@@ -1,0 +1,109 @@
+<div class="home-container">
+  <header class="header">
+    <div class="logo">fastify</div>
+    <button (click)="logout()" class="btn-logout">Logout</button>
+  </header>
+
+  <main class="main-content">
+    <div class="header-section">
+      <h1>Your Music Collection</h1>
+      <button class="btn-new" (click)="openDialog()">New</button>
+    </div>
+
+    <div *ngIf="isLoading" class="loading">
+      Loading your music collection...
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <div class="music-grid" *ngIf="!isLoading && !error && musicItems.length > 0">
+      <div class="music-card" *ngFor="let item of musicItems" (click)="onCardClick(item)">
+        <div class="thumbnail">
+          <img [src]="item.thumbnailUrl" [alt]="item.title">
+        </div>
+        <div class="music-info">
+          <h3 class="music-title" [ngClass]="{'playing-title': currentPlayingId === item.videoId}">{{ item.title }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading && !error && musicItems.length === 0" class="empty-state">
+      <p>Your collection is empty. Add your first track!</p>
+      <button class="btn-add-first" (click)="openDialog()">Add Music</button>
+    </div>
+  </main>
+
+  <!-- Add Music Dialog -->
+  <div class="dialog-overlay" *ngIf="showDialog">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2>Add New Music</h2>
+        <button class="btn-close" (click)="closeDialog()" [disabled]="isAddingMusic">×</button>
+      </div>
+      <div class="dialog-content">
+        <div class="form-group">
+          <label for="musicUrl">Enter YouTube or SoundCloud URL:</label>
+          <input
+            type="text"
+            id="musicUrl"
+            [(ngModel)]="newMusicUrl"
+            placeholder="https://..."
+            [disabled]="isAddingMusic"
+            (keydown.enter)="addNewMusic()">
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn-cancel" (click)="closeDialog()" [disabled]="isAddingMusic">Cancel</button>
+        <button class="btn-submit" (click)="addNewMusic()" [disabled]="!newMusicUrl.trim() || isAddingMusic">
+          <span *ngIf="!isAddingMusic">Add Music</span>
+          <div *ngIf="isAddingMusic" class="loading-spinner"></div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="audio-player" *ngIf="currentAudio">
+    <div class="audio-info">
+      <div class="audio-thumbnail" *ngIf="currentTrack">
+        <img [src]="currentTrack.thumbnailUrl" [alt]="currentTrack.title">
+      </div>
+      <div class="audio-details">
+        <div class="audio-title">{{ currentTrack?.title || 'Unknown Track' }}</div>
+        <div class="audio-artist">{{ currentTrack?.uploader || 'Unknown Artist' }}</div>
+      </div>
+    </div>
+
+    <div class="audio-controls">
+      <button class="control-btn" (click)="togglePlay()">
+        <span *ngIf="isPlaying">⏸️</span>
+        <span *ngIf="!isPlaying">▶️</span>
+      </button>
+
+      <div class="progress-container">
+        <span class="current-time">{{ formatTime(currentTime) }}</span>
+        <div class="progress-bar-container" (click)="seekAudio($event)">
+          <div class="progress-bar" [style.width.%]="(currentTime / duration) * 100"></div>
+        </div>
+        <span class="duration">{{ formatTime(duration) }}</span>
+      </div>
+
+      <div class="volume-control">
+        <button class="volume-btn" (click)="toggleMute()">
+          <span *ngIf="isMuted">🔇</span>
+          <span *ngIf="!isMuted">🔊</span>
+        </button>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          [value]="volume"
+          (input)="changeVolume($event)"
+          class="volume-slider"
+        >
+      </div>
+    </div>
+  </footer>
+</div>
