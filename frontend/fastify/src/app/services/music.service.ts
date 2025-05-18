@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, empty } from 'rxjs';
 import { MusicItem } from '../models/music.model';
 import { API_ENDPOINTS } from '../constants/api.constants';
 
@@ -21,6 +21,7 @@ export class MusicService {
 
   getUserMusic(): Observable<MusicItem[]> {
     return this.http.get<MusicItem[]>(API_ENDPOINTS.USER_MUSIC);
+    // return empty();
   }
 
   getAudioUrl(videoId: string): Observable<AudioData> {

@@ -3,21 +3,17 @@
     <div class="logo">fastify</div>
     <button (click)="logout()" class="btn-logout">Logout</button>
   </header>
-
   <main class="main-content">
     <div class="header-section">
       <h1>Your Music Collection</h1>
       <button class="btn-new" (click)="openDialog()">New</button>
     </div>
-
     <div *ngIf="isLoading" class="loading">
       Loading your music collection...
     </div>
-
     <div *ngIf="error" class="error-message">
       {{ error }}
     </div>
-
     <div class="music-grid" *ngIf="!isLoading && !error && musicItems.length > 0">
       <div class="music-card" *ngFor="let item of musicItems" (click)="onCardClick(item)">
         <div class="thumbnail">
@@ -28,13 +24,11 @@
         </div>
       </div>
     </div>
-
     <div *ngIf="!isLoading && !error && musicItems.length === 0" class="empty-state">
       <p>Your collection is empty. Add your first track!</p>
       <button class="btn-add-first" (click)="openDialog()">Add Music</button>
     </div>
   </main>
-
   <!-- Add Music Dialog -->
   <div class="dialog-overlay" *ngIf="showDialog">
     <div class="dialog">
@@ -63,24 +57,30 @@
       </div>
     </div>
   </div>
-
-  <footer class="audio-player" *ngIf="currentAudio">
+  <!-- Audio Player -->
+  <footer class="audio-player" *ngIf="currentTrack">
     <div class="audio-info">
       <div class="audio-thumbnail" *ngIf="currentTrack">
         <img [src]="currentTrack.thumbnailUrl" [alt]="currentTrack.title">
       </div>
       <div class="audio-details">
-        <div class="audio-title">{{ currentTrack?.title || 'Unknown Track' }}</div>
-        <div class="audio-artist">{{ currentTrack?.uploader || 'Unknown Artist' }}</div>
+        <div class="audio-title">{{ currentTrack.title }}</div>
+        <div class="audio-artist">{{ currentTrack.uploader }}</div>
       </div>
     </div>
-
     <div class="audio-controls">
-      <button class="control-btn" (click)="togglePlay()">
-        <span *ngIf="isPlaying">⏸️</span>
-        <span *ngIf="!isPlaying">▶️</span>
-      </button>
-
+      <div class="player-buttons">
+        <button class="control-btn previous-btn">
+          <img src="assets/images/previous-button.png" alt="Previous">
+        </button>
+        <button class="control-btn play-pause-btn" (click)="togglePlay()">
+          <img *ngIf="isPlaying" src="assets/images/pause-button.png" alt="Pause">
+          <img *ngIf="!isPlaying" src="assets/images/play-button.png" alt="Play">
+        </button>
+        <button class="control-btn next-btn">
+          <img src="/assets/images/next-button.png" alt="Next">
+        </button>
+      </div>
       <div class="progress-container">
         <span class="current-time">{{ formatTime(currentTime) }}</span>
         <div class="progress-bar-container" (click)="seekAudio($event)">
@@ -88,22 +88,21 @@
         </div>
         <span class="duration">{{ formatTime(duration) }}</span>
       </div>
-
-      <div class="volume-control">
-        <button class="volume-btn" (click)="toggleMute()">
-          <span *ngIf="isMuted">🔇</span>
-          <span *ngIf="!isMuted">🔊</span>
-        </button>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.01"
-          [value]="volume"
-          (input)="changeVolume($event)"
-          class="volume-slider"
-        >
-      </div>
+    </div>
+    <div class="volume-control">
+      <button class="volume-btn" (click)="toggleMute()">
+        <img *ngIf="isMuted" src="assets/images/volume-mute.png" alt="Muted">
+        <img *ngIf="!isMuted" src="assets/images/volume-up.png" alt="Volume">
+      </button>
+      <input
+        type="range"
+        min="0"
+        max="1"
+        step="0.01"
+        [value]="volume"
+        (input)="changeVolume($event)"
+        class="volume-slider"
+      >
     </div>
   </footer>
 </div>
