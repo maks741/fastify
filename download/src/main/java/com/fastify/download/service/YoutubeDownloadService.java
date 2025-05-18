@@ -95,9 +95,12 @@ public class YoutubeDownloadService implements MusicDownloadService {
         MusicDownloadedEvent musicDownloadedEvent = new MusicDownloadedEvent(user.getId(), music.getId(), downloadResult.videoId(), music.getUrl());
         musicCommandProducer.sendMusicDownloadedEvent(musicDownloadedEvent);
 
+        String thumbnailUrl = s3Service.generateSignedThumbnailUrl(user.getId(), downloadResult.videoId());
+
         return DownloadResultDto.builder()
                 .videoId(downloadResult.videoId())
                 .url(youtubeUrl)
+                .thumbnailUrl(thumbnailUrl)
                 .uploader(downloadResult.uploader())
                 .title(downloadResult.title())
                 .build();

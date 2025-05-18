@@ -64,3 +64,6 @@ aws:
     suffix:
       audio: 'audio'
       thumbnail: 'thumbnail'
+  url:
+    expiry:
+      seconds: 20

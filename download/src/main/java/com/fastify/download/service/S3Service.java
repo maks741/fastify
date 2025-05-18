@@ -4,38 +4,46 @@ import com.fastify.download.exception.FileDoesNotExistException;
 import com.fastify.download.model.DownloadResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import java.io.IOException;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 
 @Service
 public class S3Service {
 
     private final S3Client s3Client;
+    private final String awsRegion;
     private final String bucket;
     private final String objectNameSeparator;
     private final String audioSuffix;
     private final String thumbnailSuffix;
+    private final Integer urlExpirySeconds;
 
     public S3Service(
             S3Client s3Client,
+            @Value("${aws.region}") String awsRegion,
             @Value("${aws.bucket.name}") String bucket,
             @Value("${aws.objects.name.separator}")String objectNameSeparator,
             @Value("${aws.objects.suffix.audio}") String audioSuffix,
-            @Value("${aws.objects.suffix.thumbnail}") String thumbnailSuffix
+            @Value("${aws.objects.suffix.thumbnail}") String thumbnailSuffix,
+            @Value("${aws.url.expiry.seconds}") Integer urlExpirySeconds
     ) {
         this.s3Client = s3Client;
+        this.awsRegion = awsRegion;
         this.bucket = bucket;
         this.objectNameSeparator = objectNameSeparator;
         this.audioSuffix = audioSuffix;
         this.thumbnailSuffix = thumbnailSuffix;
+        this.urlExpirySeconds = urlExpirySeconds;
     }
 
     public void store(Long userId, DownloadResult downloadResult) {
@@ -61,38 +69,29 @@ public class S3Service {
         s3Client.putObject(putThumbnailFileRequest, thumbnailPath);
     }
 
-    public void putObject(String key, Path filePath) {
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
+    public String generateSignedThumbnailUrl(Long userId, String videoId) {
+        String bucketBaseKey = userId + objectNameSeparator + videoId + objectNameSeparator;
+        String thumbnailFileBucketKey = bucketBaseKey + thumbnailSuffix;
+        PresignedGetObjectRequest presignedThumbnailFileRequest;
 
-        s3Client.putObject(putObjectRequest, filePath);
-    }
+        try (S3Presigner presigner = S3Presigner.builder()
+                .region(Region.of(awsRegion))
+                .credentialsProvider(ProfileCredentialsProvider.create())
+                .build()) {
+            GetObjectRequest thumbnailFileRequest = GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(thumbnailFileBucketKey)
+                    .build();
 
-    public void deleteObject(String key) {
-        DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
+            GetObjectPresignRequest thumbnailFilePresignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofSeconds(urlExpirySeconds))
+                    .getObjectRequest(thumbnailFileRequest)
+                    .build();
 
-        s3Client.deleteObject(deleteObjectRequest);
-    }
-
-    public byte[] getObject(String key) {
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-
-        ResponseInputStream<GetObjectResponse> responseResponseInputStream = s3Client.getObject(getObjectRequest);
-        byte[] bytes;
-        try {
-            bytes = responseResponseInputStream.readAllBytes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            presignedThumbnailFileRequest = presigner.presignGetObject(thumbnailFilePresignRequest);
         }
-        return bytes;
+
+        return presignedThumbnailFileRequest.url().toExternalForm();
     }
 
     private void verifyExists(Path path) {
