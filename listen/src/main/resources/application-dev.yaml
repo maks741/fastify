@@ -4,3 +4,8 @@ server:
 local:
   storage:
     host: 'http://localhost:8060/resources/'
+  objects:
+    suffix:
+      audio: 'audio'
+    format:
+      audio: mp3
