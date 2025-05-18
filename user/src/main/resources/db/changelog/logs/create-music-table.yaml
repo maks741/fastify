@@ -22,6 +22,16 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: uploader
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(1000)
+                  constraints:
+                    nullable: false
+              - column:
                   name: user_id
                   type: bigint
                   constraints:
