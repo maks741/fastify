@@ -25,6 +25,8 @@ public class DownloadMusicCommandHandler implements CommandHandler {
                 musicDownloadedEvent.musicId(),
                 musicDownloadedEvent.videoId(),
                 musicDownloadedEvent.musicUrl(),
+                musicDownloadedEvent.uploader(),
+                musicDownloadedEvent.title(),
                 user
         );
         musicRepository.save(music);

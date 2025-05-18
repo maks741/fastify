@@ -33,6 +33,12 @@ public class Music {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String url;
 
+    @Column(nullable = false)
+    private String uploader;
+
+    @Column(nullable = false)
+    private String title;
+
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private User user;
 }

@@ -24,7 +24,9 @@ public class MusicService {
                     return new MusicDto(
                             music.getVideoId(),
                             music.getUrl(),
-                            thumbnailUrl
+                            thumbnailUrl,
+                            music.getUploader(),
+                            music.getTitle()
                     );
                 })
                 .toList();

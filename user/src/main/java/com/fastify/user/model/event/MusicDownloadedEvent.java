@@ -4,6 +4,8 @@ public record MusicDownloadedEvent(
         Long userId,
         Long musicId,
         String videoId,
-        String musicUrl
+        String musicUrl,
+        String uploader,
+        String title
 ) {
 }
