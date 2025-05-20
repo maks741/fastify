@@ -1,0 +1,65 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="logo">fastify</div>
+    <h2>{{ isLoginMode ? 'Login' : 'Sign Up' }}</h2>
+    <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
+      <div class="form-group" *ngIf="!isLoginMode">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          class="form-control"
+          ngModel
+          name="username"
+          required
+          placeholder="Enter username"
+        />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          ngModel
+          name="email"
+          required
+          email
+          placeholder="Enter email"
+        />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="form-control"
+          ngModel
+          name="password"
+          required
+          minlength="6"
+          placeholder="Enter password"
+        />
+      </div>
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+      <div class="button-group">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!authForm.valid || isLoading">
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+          <span *ngIf="!isLoading">{{ isLoginMode ? 'Login' : 'Sign Up' }}</span>
+        </button>
+      </div>
+      <div class="switch-mode">
+        <p>{{ isLoginMode ? 'Need an account?' : 'Already have an account?' }}
+          <a href="javascript:void(0)" (click)="onSwitchMode()">
+            {{ isLoginMode ? 'Sign Up' : 'Login' }}
+          </a>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

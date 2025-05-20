@@ -11,6 +11,11 @@ import { RouterOutlet } from '@angular/router';
     </div>
   `,
   styles: [`
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
     .container {
       width: 100%;
       height: 100%;
