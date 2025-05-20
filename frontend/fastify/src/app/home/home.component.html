@@ -3,7 +3,14 @@
     <div class="logo">
       <img src="assets/images/spotify-logo.png" width="50" height="50" alt="spotify-logo">
     </div>
-    <button (click)="logout()" class="btn-logout">Logout</button>
+    <div class="profile-container" (click)="toggleDropdown()" tabindex="0" (blur)="hideDropdown()">
+      <div class="profile-hover-area">
+        <img src="assets/images/profile-icon.png" alt="User Profile" class="profile-icon">
+      </div>
+      <div class="dropdown-menu dark-theme" *ngIf="dropdownVisible">
+        <button class="dropdown-item" (click)="logout()">Logout</button>
+      </div>
+    </div>
   </header>
   <main class="main-content">
     <div class="header-section">

@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
   showDialog = false;
   newMusicUrl = '';
   isAddingMusic = false;
+  dropdownVisible = false;
 
   // Audio player properties
   @ViewChild('audioPlayer') audioPlayerRef!: ElementRef<HTMLAudioElement>;
@@ -223,5 +224,14 @@ export class HomeComponent implements OnInit {
       this.currentAudio.remove();
       this.currentAudio = null;
     }
+  }
+
+  toggleDropdown(): void {
+    this.dropdownVisible = !this.dropdownVisible;
+  }
+
+  hideDropdown(): void {
+    // Add small delay to allow button click to register before hiding
+    setTimeout(() => this.dropdownVisible = false, 100);
   }
 }
