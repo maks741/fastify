@@ -1,7 +1,8 @@
 <div class="auth-container">
   <div class="auth-card">
-    <div class="logo">fastify</div>
-    <h2>{{ isLoginMode ? 'Login' : 'Sign Up' }}</h2>
+    <div class="logo">
+      <img src="assets/images/spotify-logo.png" width="50" height="50" alt="spotify-logo">
+    </div>
     <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
       <div class="form-group" *ngIf="!isLoginMode">
         <label for="username">Username</label>
