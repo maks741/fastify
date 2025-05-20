@@ -1,11 +1,13 @@
 <div class="home-container">
   <header class="header">
-    <div class="logo">fastify</div>
+    <div class="logo">
+      <img src="assets/images/spotify-logo.png" width="50" height="50" alt="spotify-logo">
+    </div>
     <button (click)="logout()" class="btn-logout">Logout</button>
   </header>
   <main class="main-content">
     <div class="header-section">
-      <h1>Your Music Collection</h1>
+      <h2>Your Music Collection</h2>
       <button class="btn-new" (click)="openDialog()">New</button>
     </div>
     <div *ngIf="isLoading" class="loading">
@@ -20,7 +22,7 @@
           <img [src]="item.thumbnailUrl" [alt]="item.title">
         </div>
         <div class="music-info">
-          <h3 class="music-title" [ngClass]="{'playing-title': currentPlayingId === item.videoId}">{{ item.title }}</h3>
+          <p class="music-title" [ngClass]="{'playing-title': currentPlayingId === item.videoId}">{{ item.title }}</p>
         </div>
       </div>
     </div>

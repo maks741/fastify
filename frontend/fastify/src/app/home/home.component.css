@@ -17,10 +17,8 @@
 }
 
 .logo {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1DB954;
-  letter-spacing: 1px;
+  display: flex;
+  justify-content: left;
 }
 
 .btn-logout {
@@ -49,8 +47,9 @@
 
 .header-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: left;
   align-items: center;
+  gap: 2rem;
   margin: 1.5rem;
 }
 
@@ -144,12 +143,13 @@ h1 {
 
 .music-title {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 500;
+  font-family: Inter, serif;
 }
 
 .playing-title {
@@ -326,4 +326,195 @@ h1 {
   border-radius: 50%;
   background: #ffffff;
   border: none;
+}
+
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dialog {
+  width: 90%;
+  max-width: 500px;
+  background-color: #212121;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  animation: dialogFadeIn 0.2s ease-out;
+}
+
+@keyframes dialogFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #333333;
+  background-color: #121212;
+}
+
+.dialog-header h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.3rem;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  font-size: 24px;
+  line-height: 24px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.btn-close:hover {
+  color: #ffffff;
+}
+
+.dialog-content {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #b3b3b3;
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: #333333;
+  border: 1px solid #444444;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #1DB954;
+  box-shadow: 0 0 0 2px rgba(29, 185, 84, 0.3);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px 20px;
+  background-color: #121212;
+  border-top: 1px solid #333333;
+  gap: 10px;
+}
+
+.btn-cancel {
+  background-color: transparent;
+  color: #b3b3b3;
+  border: 1px solid #555555;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+.btn-submit {
+  background-color: #1DB954;
+  color: #000000;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 100px;
+}
+
+.btn-submit:hover {
+  background-color: #1ed760;
+  transform: scale(1.05);
+}
+
+.btn-submit:disabled {
+  background-color: #565656;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading spinner for the add button */
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top: 2px solid #000000;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty state styles */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #b3b3b3;
+}
+
+.empty-state p {
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.btn-add-first {
+  background-color: #1DB954;
+  color: #000000;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-add-first:hover {
+  background-color: #1ed760;
+  transform: scale(1.05);
 }
