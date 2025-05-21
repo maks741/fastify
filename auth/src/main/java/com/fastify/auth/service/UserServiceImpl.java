@@ -2,6 +2,7 @@ package com.fastify.auth.service;
 
 import com.fastify.auth.controller.kafka.UserCommandProducer;
 import com.fastify.auth.exception.DuplicateEmailException;
+import com.fastify.auth.exception.NotFoundException;
 import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.model.command.UserCommand;
 import com.fastify.auth.model.dto.LoginRequestDto;
@@ -107,6 +108,6 @@ public class UserServiceImpl implements UserService {
 
     private User findByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new NotFoundException("User not found by email: " + email));
     }
 }

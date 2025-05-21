@@ -1,6 +1,7 @@
 package com.fastify.auth.exception.handler;
 
 import com.fastify.auth.exception.DuplicateEmailException;
+import com.fastify.auth.exception.NotFoundException;
 import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.model.dto.exception.ExceptionDto;
 import com.fastify.auth.model.dto.exception.FieldValidationDto;
@@ -36,6 +37,13 @@ public class CustomExceptionHandler {
         String message = "Something went wrong";
         ExceptionDto exceptionDto = new ExceptionDto(message);
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionDto);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ExceptionDto> handleNotFoundException(NotFoundException e) {
+        String message = e.getMessage();
+        ExceptionDto exceptionDto = new ExceptionDto(message);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionDto);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)

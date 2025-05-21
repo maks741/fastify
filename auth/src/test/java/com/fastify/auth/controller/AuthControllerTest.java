@@ -1,6 +1,7 @@
 package com.fastify.auth.controller;
 
 import com.fastify.auth.exception.DuplicateEmailException;
+import com.fastify.auth.exception.NotFoundException;
 import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.exception.handler.CustomExceptionHandler;
 import com.fastify.auth.model.dto.LoginRequestDto;
@@ -174,6 +175,26 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(loginRequestDtoJson))
                 .andExpect(status().isUnauthorized());
+
+        verify(userService).login(loginRequestDto);
+    }
+
+    @Test
+    @SneakyThrows
+    void login_WhenUserServiceThrowsNotFoundException_ShouldReturnNotFound() {
+        LoginRequestDto loginRequestDto = new LoginRequestDto(
+                "email@email.com",
+                "password"
+        );
+        String loginRequestDtoJson = jsonConverter.toJson(loginRequestDto);
+
+        when(userService.login(loginRequestDto))
+                .thenThrow(new NotFoundException());
+
+        mockMvc.perform(post(baseUrl + "/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequestDtoJson))
+                .andExpect(status().isNotFound());
 
         verify(userService).login(loginRequestDto);
     }

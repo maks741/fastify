@@ -72,7 +72,7 @@ class UserCommandProducerIntegrationTest {
 
     @Test
     @SneakyThrows
-    void sendUserCommand_WhenValidParamsProvided_successfullySendsMessage() {
+    void sendUserCommand_WhenValidParamsProvided_SuccessfullySendsMessage() {
         String topic = environment.getProperty("spring.kafka.topics[0].name");
         Long userId = 1L;
         String payload = "payload";

@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 3, count = 3)
 @SpringBootTest(properties = "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}")
-public class UserCommandProducerTest {
+class UserCommandProducerTest {
 
     @Autowired
     UserCommandProducer userCommandProducer;
@@ -82,7 +82,7 @@ public class UserCommandProducerTest {
 
     @Test
     @SneakyThrows
-    void sendUserCommand_WhenKafkaTemplateThrowsException_throwsPublishingException() {
+    void sendUserCommand_WhenKafkaTemplateThrowsException_ThrowsPublishingException() {
         String topic = environment.getProperty("spring.kafka.topics[0].name");
         Long userId = 1L;
         String payload = "payload";
