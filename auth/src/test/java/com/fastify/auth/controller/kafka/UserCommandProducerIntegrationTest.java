@@ -1,6 +1,5 @@
 package com.fastify.auth.controller.kafka;
 
-import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.model.command.UserCommand;
 import lombok.SneakyThrows;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -11,46 +10,37 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
-import org.springframework.messaging.Message;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
 @EmbeddedKafka(partitions = 3, count = 3)
 @SpringBootTest(properties = "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}")
-public class UserCommandProducerTest {
+class UserCommandProducerIntegrationTest {
 
     @Autowired
     UserCommandProducer userCommandProducer;
 
     @Autowired
     EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    @MockitoBean
-    KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
     Environment environment;
@@ -82,23 +72,24 @@ public class UserCommandProducerTest {
 
     @Test
     @SneakyThrows
-    void sendUserCommand_WhenKafkaTemplateThrowsException_throwsPublishingException() {
+    void sendUserCommand_WhenValidParamsProvided_successfullySendsMessage() {
         String topic = environment.getProperty("spring.kafka.topics[0].name");
         Long userId = 1L;
         String payload = "payload";
         UserCommand userCommand = UserCommand.CREATE;
-        ArgumentCaptor<Message> argumentCaptor = ArgumentCaptor.forClass(Message.class);
 
-        when(kafkaTemplate.send(argumentCaptor.capture()))
-                .thenThrow(new RuntimeException());
+        userCommandProducer.sendUserCommand(topic, userId, payload, userCommand);
 
-        assertThrows(
-                PublishingException.class,
-                () -> userCommandProducer.sendUserCommand(topic, userId, payload, userCommand)
-        );
+        ConsumerRecord<String, String> producedRecord = blockingQueue.poll(20000, TimeUnit.MILLISECONDS);
+        assertNotNull(producedRecord);
+        assertNotNull(producedRecord.key());
+        assertNotNull(producedRecord.value());
 
-        ConsumerRecord<String, String> producedRecord = blockingQueue.poll(5000, TimeUnit.MILLISECONDS);
-        assertNull(producedRecord);
+        String actualPayload = producedRecord.value();
+        assertEquals(payload, actualPayload);
+        assertEquals(topic, producedRecord.topic());
+        assertEquals(userId, producedRecord.key());
+        assertEquals(userCommand.name(), new String(producedRecord.headers().lastHeader(commandHeader).value()));
     }
 
     Map<String, Object> consumerProperties() {
