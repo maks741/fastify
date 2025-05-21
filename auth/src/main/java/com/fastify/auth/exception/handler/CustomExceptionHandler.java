@@ -1,6 +1,7 @@
 package com.fastify.auth.exception.handler;
 
 import com.fastify.auth.exception.DuplicateEmailException;
+import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.model.dto.exception.ExceptionDto;
 import com.fastify.auth.model.dto.exception.FieldValidationDto;
 import org.springframework.http.HttpStatus;
@@ -28,6 +29,13 @@ public class CustomExceptionHandler {
         String message = "Authorize first";
         ExceptionDto exceptionDto = new ExceptionDto(message);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionDto);
+    }
+
+    @ExceptionHandler(PublishingException.class)
+    public ResponseEntity<ExceptionDto> handlePublishingException(PublishingException e) {
+        String message = "Something went wrong";
+        ExceptionDto exceptionDto = new ExceptionDto(message);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionDto);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)

@@ -25,7 +25,7 @@ public class UserCommandProducer {
         this.commandHeader = commandHeader;
     }
 
-    public void sendUserCommand(String topic, Long userId, String payload, UserCommand userCommand) {
+    public void sendUserCommand(String topic, Long userId, String payload, UserCommand userCommand) throws PublishingException {
         var message = buildMessage(topic, userId, payload, userCommand);
         try {
             kafkaTemplate.send(message);

@@ -2,6 +2,7 @@ package com.fastify.auth.service;
 
 import com.fastify.auth.controller.kafka.UserCommandProducer;
 import com.fastify.auth.exception.DuplicateEmailException;
+import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.model.command.UserCommand;
 import com.fastify.auth.model.dto.LoginRequestDto;
 import com.fastify.auth.model.dto.LoginResponseDto;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) {
+    public SignUpResponseDto signUp(SignUpRequestDto signUpRequestDto) throws PublishingException, DuplicateEmailException {
         String username = signUpRequestDto.username();
         User user = User.builder()
                 .name(username)
@@ -84,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) throws AuthenticationException {
         String email = loginRequestDto.email();
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

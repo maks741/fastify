@@ -1,6 +1,7 @@
 package com.fastify.auth.controller;
 
 import com.fastify.auth.exception.DuplicateEmailException;
+import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.exception.handler.CustomExceptionHandler;
 import com.fastify.auth.model.dto.LoginRequestDto;
 import com.fastify.auth.model.dto.SignUpRequestDto;
@@ -98,6 +99,27 @@ class AuthControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(signUpRequestDtoJson))
                 .andExpect(status().isConflict());
+
+        verify(userService).signUp(signUpRequestDto);
+    }
+
+    @Test
+    @SneakyThrows
+    void signUp_WhenUserServiceThrowsPublishingException_ShouldReturnForbidden() {
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto(
+                "username",
+                "email@email.com",
+                "password"
+        );
+        String signUpRequestDtoJson = jsonConverter.toJson(signUpRequestDto);
+
+        when(userService.signUp(signUpRequestDto))
+                .thenThrow(new PublishingException());
+
+        mockMvc.perform(post(baseUrl + "/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signUpRequestDtoJson))
+                .andExpect(status().isForbidden());
 
         verify(userService).signUp(signUpRequestDto);
     }
