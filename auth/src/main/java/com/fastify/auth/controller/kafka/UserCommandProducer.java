@@ -1,5 +1,6 @@
 package com.fastify.auth.controller.kafka;
 
+import com.fastify.auth.exception.PublishingException;
 import com.fastify.auth.model.command.UserCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,11 @@ public class UserCommandProducer {
 
     public void sendUserCommand(String topic, Long userId, String payload, UserCommand userCommand) {
         var message = buildMessage(topic, userId, payload, userCommand);
-        kafkaTemplate.send(message);
+        try {
+            kafkaTemplate.send(message);
+        } catch (Exception e) {
+            throw new PublishingException("Message: " + message + " could not be sent: " + e.getMessage());
+        }
         log.info("User command sent: {}", message);
     }
 
