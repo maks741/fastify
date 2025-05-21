@@ -5,12 +5,10 @@ import com.fastify.auth.model.dto.exception.ExceptionDto;
 import com.fastify.auth.model.dto.exception.FieldValidationDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestControllerAdvice
@@ -23,6 +21,13 @@ public class CustomExceptionHandler {
                 .toList();
         ExceptionDto exceptionDto = new ExceptionDto(validations);
         return ResponseEntity.badRequest().body(exceptionDto);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ExceptionDto> handleAuthenticationException(AuthenticationException e) {
+        String message = "Authorize first";
+        ExceptionDto exceptionDto = new ExceptionDto(message);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionDto);
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
