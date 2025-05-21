@@ -2,9 +2,14 @@ package com.fastify.auth.service;
 
 import com.fastify.auth.controller.kafka.UserCommandProducer;
 import com.fastify.auth.exception.NotFoundException;
+import com.fastify.auth.model.command.UserCommand;
 import com.fastify.auth.model.dto.LoginRequestDto;
 import com.fastify.auth.model.dto.LoginResponseDto;
+import com.fastify.auth.model.dto.SignUpRequestDto;
+import com.fastify.auth.model.dto.SignUpResponseDto;
 import com.fastify.auth.model.entity.User;
+import com.fastify.auth.model.enumeration.Role;
+import com.fastify.auth.model.event.UserCreatedEvent;
 import com.fastify.auth.repository.UserRepository;
 import com.fastify.auth.security.JwtService;
 import com.fastify.auth.util.JsonConverter;
@@ -62,6 +67,57 @@ class UserServiceImplTest {
                 jsonConverter,
                 userCommandTopic
         );
+    }
+
+    @Test
+    void signUp_WhenValidSignUpDetailsProvided_ShouldSignUpSuccessfully() {
+        Long savedUserId = 2L;
+        String username = "username";
+        String email = "email@email.com";
+        String password = "password";
+        String encodedPassword = "encoded password";
+        Role userRole = Role.USER;
+        SignUpRequestDto signUpRequestDto = new SignUpRequestDto(username, email, password);
+        User expectedSavedUser = User.builder()
+                .id(savedUserId)
+                .name(username)
+                .email(email)
+                .password(encodedPassword)
+                .role(userRole)
+                .build();
+        User expectedUserToSave = User.builder()
+                .name(username)
+                .email(email)
+                .password(encodedPassword)
+                .role(userRole)
+                .build();
+        UserCreatedEvent userCreatedEvent = new UserCreatedEvent(
+                savedUserId,
+                email,
+                userRole
+        );
+        String userCreatedEventJson = "json";
+        String jwt = "jwt";
+        SignUpResponseDto expectedResult = new SignUpResponseDto(savedUserId, jwt, username, email);
+
+        when(passwordEncoder.encode(password))
+                .thenReturn(encodedPassword);
+        when(userRepository.save(expectedUserToSave))
+                .thenReturn(expectedSavedUser);
+        when(jsonConverter.toJson(userCreatedEvent))
+                .thenReturn(userCreatedEventJson);
+        when(jwtService.generateToken(expectedSavedUser))
+                .thenReturn(jwt);
+
+        SignUpResponseDto actualResult = userService.signUp(signUpRequestDto);
+
+        verify(passwordEncoder).encode(password);
+        verify(userRepository).save(expectedUserToSave);
+        verify(jsonConverter).toJson(userCreatedEvent);
+        verify(userCommandProducer)
+                .sendUserCommand(userCommandTopic, savedUserId, userCreatedEventJson, UserCommand.CREATE);
+        verify(jwtService).generateToken(expectedSavedUser);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
