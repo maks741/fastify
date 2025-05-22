@@ -10,7 +10,7 @@ public class JsonConverter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public <T> T convert(String json, Class<T> clazz) {
+    public <T> T convert(String json, Class<T> clazz) throws BadPayloadException {
         try {
             return objectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
