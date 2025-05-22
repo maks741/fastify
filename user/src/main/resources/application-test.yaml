@@ -1,0 +1,49 @@
+server:
+  port: 8070
+
+spring:
+  datasource:
+    url: 'jdbc:h2:mem:mydb'
+    password: h2
+    username: h2
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  kafka:
+    admin:
+      properties:
+        offsets.topic.replication.factor: 3
+        transaction.state.log.replication.factor: 3
+        transaction.state.log.min.isr: 3
+    producer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+    consumer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+      group-id: 'test-group-id'
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+    topics:
+      - name: 'user-command'
+      - name: 'music-command'
+    headers:
+      command: 'command'
+
+local:
+  storage:
+    host: 'http://localhost:8060/resources/'
+  objects:
+    suffix:
+      thumbnail: 'thumbnail'
+    format:
+      thumbnail: png
+
+jwt:
+  signing:
+    key: 'super-secure-signing-key'
+
+await:
+  seconds: 10

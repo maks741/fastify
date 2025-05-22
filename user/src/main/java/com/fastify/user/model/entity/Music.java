@@ -27,13 +27,13 @@ public class Music {
     @Id
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 512)
     private String videoId;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 512)
     private String url;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 512)
     private String uploader;
 
     @Column(nullable = false)

@@ -13,22 +13,22 @@ databaseChangeLog:
                     primaryKey: true
               - column:
                   name: video_id
-                  type: text
+                  type: varchar(512)
                   constraints:
                     nullable: false
               - column:
                   name: url
-                  type: text
+                  type: varchar(512)
                   constraints:
                     nullable: false
               - column:
                   name: uploader
-                  type: varchar(1000)
+                  type: varchar(512)
                   constraints:
                     nullable: false
               - column:
                   name: title
-                  type: varchar(1000)
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:

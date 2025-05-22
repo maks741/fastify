@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-@Profile("dev")
+@Profile({"dev", "test"})
 @Service
 public class LocalFileStorageService implements FileStorage {
     private final String localStorageHost;
