@@ -36,7 +36,7 @@ public class SecurityConfig {
 
         httpSecurity.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
-                        .requestMatchers("/user/**")
+                        .requestMatchers("/users/**")
                         .authenticated()
         );
 
