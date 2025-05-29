@@ -27,12 +27,12 @@ const NewMusic = ({
 
         await api.post(API_ENDPOINTS.ADD_MUSIC, {
             url: newMusicUrl
-        }).then(response => {
+        }).then(function (response) {
             console.log('response: ', response);
             setIsAddingMusic(false);
             onAddMusic(response);
             closeDialog();
-        }).catch(error => {
+        }).catch(function (error) {
             console.error('Error adding music:', error);
             setError('Failed to add music. Please check the URL and try again.');
             setIsAddingMusic(false);

@@ -2,24 +2,28 @@ import classes from './Playlist.module.css';
 import {useEffect, useState} from "react";
 import Player from "./Player.jsx";
 import NewMusic from "./NewMusic.jsx";
+import api from "../service/HttpClient.js";
+import {API_ENDPOINTS} from "../constants/api.constants.js";
 
 function Playlist() {
     const [ isFetching, setIsFetching ] = useState(false);
+    const [ error, setError ] = useState(null);
     const [ isNewMusicDialogOpen, setIsNewMusicDialogOpen ] = useState(false);
     const [ currentTrack, setCurrentTrack ] = useState({});
 
     const [ playlist, setPlaylist ] = useState([]);
 
     useEffect(() => {
-        setPlaylist([
-            {
-                videoId: 'h330RYQFgaY',
-                url: 'https://www.youtube.com/watch?v=h330RYQFgaY',
-                thumbnailUrl: 'http://localhost:8060/resources/2/h330RYQFgaY/thumbnail.png',
-                uploader: 'АДЛИН',
-                title: 'Dead Inside (Slowed + Reverb)'
-            }
-        ])
+        api.get(API_ENDPOINTS.USER_MUSIC)
+            .then(function (response) {
+                console.log('response: ', response.data);
+                setPlaylist(response.data);
+                setIsFetching(false);
+            })
+            .catch(function (error) {
+               setError('Failed to load playlist')
+                console.log(error);
+            });
     }, []);
 
     function onCardClick(musicItem) {
@@ -28,27 +32,46 @@ function Playlist() {
             return;
         }
 
-        const track = {
-            ...musicItem,
-            audioUrl: 'http://localhost:8060/resources/2/h330RYQFgaY/audio.mp3'
-        }
+        api.get(API_ENDPOINTS.GET_AUDIO_URL + '/' + musicItem.videoId)
+            .then(function (response) {
+                console.log('AAAAAAAA')
+                const { videoId, url } = response.data;
+                const track = {
+                    ...musicItem,
+                    audioUrl: url
+                }
 
-        setCurrentTrack(track);
+                setCurrentTrack(track);
+            })
+            .catch(function (error) {
+                setError('Failed to load song')
+                console.log(error);
+            })
     }
 
     function addMusicHandler(musicItem) {
         setPlaylist([...playlist, musicItem]);
     }
 
+    if (error) {
+        return (
+            <>
+                <p>{error}</p>
+            </>
+        )
+    }
+
     return (
         <>
+            {isFetching && (
+                <p>Loading your playlist</p>
+            )}
             {isNewMusicDialogOpen && (
                 <NewMusic
                     onClose={() => setIsNewMusicDialogOpen(false)}
                     onAddMusic={addMusicHandler}
                 />
             )}
-
             <main className={classes.main_content}>
                 <div className={classes.header_section}>
                     <h2>Your Music Collection</h2>

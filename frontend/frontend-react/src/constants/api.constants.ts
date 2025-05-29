@@ -5,5 +5,3 @@ export const API_ENDPOINTS = {
   GET_AUDIO_URL: 'http://localhost:8090/listen',
   ADD_MUSIC: 'http://localhost:8060/download'
 };
-
-export const DEBUG_HTTP = true;
