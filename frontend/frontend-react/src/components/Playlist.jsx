@@ -16,13 +16,12 @@ function Playlist() {
     useEffect(() => {
         api.get(API_ENDPOINTS.USER_MUSIC)
             .then(function (response) {
-                console.log('response: ', response.data);
                 setPlaylist(response.data);
                 setIsFetching(false);
             })
             .catch(function (error) {
-               setError('Failed to load playlist')
-                console.log(error);
+               setError('Failed to load playlist');
+               console.log(error);
             });
     }, []);
 
@@ -34,7 +33,6 @@ function Playlist() {
 
         api.get(API_ENDPOINTS.GET_AUDIO_URL + '/' + musicItem.videoId)
             .then(function (response) {
-                console.log('AAAAAAAA')
                 const { videoId, url } = response.data;
                 const track = {
                     ...musicItem,

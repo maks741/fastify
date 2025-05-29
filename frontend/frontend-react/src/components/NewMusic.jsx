@@ -28,9 +28,8 @@ const NewMusic = ({
         await api.post(API_ENDPOINTS.ADD_MUSIC, {
             url: newMusicUrl
         }).then(function (response) {
-            console.log('response: ', response);
             setIsAddingMusic(false);
-            onAddMusic(response);
+            onAddMusic(response.data);
             closeDialog();
         }).catch(function (error) {
             console.error('Error adding music:', error);
