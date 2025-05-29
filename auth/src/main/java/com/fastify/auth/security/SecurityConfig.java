@@ -20,7 +20,7 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         httpSecurity.cors(corsConfigurer -> corsConfigurer.configurationSource(request -> {
             var config = new CorsConfiguration();
-            config.setAllowedOrigins(List.of("http://localhost:4200", "http://localhost:4200/", "http://localhost:4200/*"));
+            config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5173/", "http://localhost:5173/*"));
             config.setAllowedMethods(List.of("OPTIONS", "GET", "POST", "PUT", "DELETE", "PATCH"));
             config.setAllowedHeaders(
                     List.of("Access-Control-Allow-Origin", "Access-Control-Allow-Headers",
