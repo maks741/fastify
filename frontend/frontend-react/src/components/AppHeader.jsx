@@ -1,5 +1,6 @@
 import classes from './AppHeader.module.css'
 import {useEffect, useRef, useState} from "react";
+import {Link} from "react-router-dom";
 
 function AppHeader() {
     const [dropDownVisible, setDropDownVisible] = useState(false);
@@ -40,7 +41,7 @@ function AppHeader() {
                 </div>
                 {dropDownVisible && (
                     <div className={classes.dropdown_menu}>
-                        <button className={classes.dropdown_item}>Logout</button>
+                        <Link to='/auth' className={classes.dropdown_item}>Logout</Link>
                     </div>
                 )}
             </div>

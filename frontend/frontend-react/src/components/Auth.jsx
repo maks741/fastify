@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import classes from './Auth.module.css';
+import api, {setCurrentUser} from "../service/HttpClient.js";
+import {API_ENDPOINTS} from "../constants/api.constants.js";
+import {useNavigate} from "react-router-dom";
 
 function Auth() {
     const [isLoginMode, setIsLoginMode] = useState(true);
@@ -10,6 +13,7 @@ function Auth() {
         email: '',
         password: ''
     });
+    const navigate = useNavigate();
 
     const handleInputChange = (e) => {
         setFormData(prev => ({
@@ -35,11 +39,26 @@ function Auth() {
 
         try {
             if (isLoginMode) {
-                // Login logic here
-                console.log('Logging in with', formData.email, formData.password);
+                api.post(API_ENDPOINTS.LOGIN, {
+                    email: formData.email,
+                    password: formData.password
+                }).then(function (response) {
+                    const user = response.data;
+                    setCurrentUser(user);
+                    setIsLoading(false);
+                    navigate('/');
+                })
             } else {
-                // Signup logic here
-                console.log('Signing up with', formData.username, formData.email, formData.password);
+                api.post(API_ENDPOINTS.LOGIN, {
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password
+                }).then(function (response) {
+                    const user = response.data;
+                    setCurrentUser(user);
+                    setIsLoading(false);
+                    navigate('/');
+                })
             }
         } catch (err) {
             setError('Authentication failed. Please try again.');

@@ -4,48 +4,41 @@ const api = axios.create({
     baseURL: 'https://your-api.com',
 });
 
-const DEBUG_HTTP = false;
-
 api.interceptors.request.use(
     (config) => {
-        const token = 'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjIsInVzZXJSb2xlIjoiVVNFUiIsInN1YiI6ImJlcnNlcmNlcjkzQGdtYWlsLmNvbSIsImlhdCI6MTc0ODUwMzYzMCwiZXhwIjoxNzQ4NTI1MjMwfQ.l1BjyW_c94Y6U1aTHSEjnW0dE4atkNpcEhz2HjJ8Zc4';
-
-        // Add headers
         config.headers['Content-Type'] = 'application/json';
         config.headers['Accept'] = 'application/json';
 
+        const token = localStorage.getItem('accessToken');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        if (DEBUG_HTTP) {
-            console.log('🚀 HTTP Request:', config);
         }
 
         return config;
     },
     (error) => {
-        if (DEBUG_HTTP) {
-            console.error('❌ Request Error:', error);
+        return Promise.reject(error);
+    }
+);
+
+api.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            const status = error.response.status;
+
+            if (status === 401 || status === 403) {
+                navigate('/auth')
+            }
         }
         return Promise.reject(error);
     }
 );
 
-// Response interceptor
-api.interceptors.response.use(
-    (response) => {
-        if (DEBUG_HTTP) {
-            console.log('✅ HTTP Response:', response);
-        }
-        return response;
-    },
-    (error) => {
-        if (DEBUG_HTTP) {
-            console.error('❌ HTTP Error:', error);
-        }
-        return Promise.reject(error);
-    }
-);
+export function setCurrentUser(user) {
+    localStorage.setItem('accessToken', user.token);
+}
 
 export default api;
