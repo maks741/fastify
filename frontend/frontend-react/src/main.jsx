@@ -4,6 +4,7 @@ import './index.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import RootLayout from "./routes/RootLayout.jsx";
 import Playlist from "./components/Playlist.jsx";
+import Auth from "./components/Auth.jsx";
 
 const router = createBrowserRouter([
     {
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
                 element: <Playlist />
             }
         ]
+    },
+    {
+        path: '/auth',
+        element: <Auth />
     }
 ])
 
