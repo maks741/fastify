@@ -1,20 +1,26 @@
 import classes from './Playlist.module.css';
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Player from "./Player.jsx";
+import NewMusic from "./NewMusic.jsx";
 
 function Playlist() {
     const [ isFetching, setIsFetching ] = useState(false);
+    const [ isNewMusicDialogOpen, setIsNewMusicDialogOpen ] = useState(false);
     const [ currentTrack, setCurrentTrack ] = useState({});
 
-    const playlist = [
-        {
-            videoId: 'h330RYQFgaY',
-            url: 'https://www.youtube.com/watch?v=h330RYQFgaY',
-            thumbnailUrl: 'http://localhost:8060/resources/2/h330RYQFgaY/thumbnail.png',
-            uploader: 'АДЛИН',
-            title: 'Dead Inside (Slowed + Reverb)'
-        }
-    ]
+    const [ playlist, setPlaylist ] = useState([]);
+
+    useEffect(() => {
+        setPlaylist([
+            {
+                videoId: 'h330RYQFgaY',
+                url: 'https://www.youtube.com/watch?v=h330RYQFgaY',
+                thumbnailUrl: 'http://localhost:8060/resources/2/h330RYQFgaY/thumbnail.png',
+                uploader: 'АДЛИН',
+                title: 'Dead Inside (Slowed + Reverb)'
+            }
+        ])
+    }, []);
 
     function onCardClick(musicItem) {
         if (!musicItem.videoId) {
@@ -30,12 +36,23 @@ function Playlist() {
         setCurrentTrack(track);
     }
 
+    function addMusicHandler(musicItem) {
+        setPlaylist([...playlist, musicItem]);
+    }
+
     return (
         <>
+            {isNewMusicDialogOpen && (
+                <NewMusic
+                    onClose={() => setIsNewMusicDialogOpen(false)}
+                    onAddMusic={addMusicHandler}
+                />
+            )}
+
             <main className={classes.main_content}>
                 <div className={classes.header_section}>
                     <h2>Your Music Collection</h2>
-                    <button className={classes.btn_new}>New</button>
+                    <button className={classes.btn_new} onClick={() => setIsNewMusicDialogOpen(true)}>New</button>
                 </div>
                 {isFetching && (
                     <div className={classes.loading}>
