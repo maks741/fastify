@@ -18,14 +18,14 @@ function AppHeader() {
             if (dropDownRef.current && !dropDownRef.current.contains(event.target)) {
                 hideDropDown();
             }
+        }
 
-            if (dropDownVisible) {
-                document.addEventListener('mousedown', handleClickOutsideDropDown);
-            }
+        if (dropDownVisible) {
+            document.addEventListener('mousedown', handleClickOutsideDropDown);
+        }
 
-            return () => {
-                document.removeEventListener('mousedown', handleClickOutsideDropDown);
-            }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutsideDropDown);
         }
     }, [dropDownVisible]);
 

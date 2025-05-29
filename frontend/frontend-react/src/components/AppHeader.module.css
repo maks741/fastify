@@ -45,7 +45,7 @@
 .dropdown_item {
     padding: 10px 15px;
     width: 100%;
-    background: none;
+    background-color: rgb(60, 60, 60);
     border: none;
     text-align: left;
     font-size: 14px;
