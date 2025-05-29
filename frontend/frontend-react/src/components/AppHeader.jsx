@@ -41,7 +41,9 @@ function AppHeader() {
                 </div>
                 {dropDownVisible && (
                     <div className={classes.dropdown_menu}>
-                        <Link to='/auth' className={classes.dropdown_item}>Logout</Link>
+                        <div className={classes.dropdown_item}>
+                            <Link to='/auth' className={classes.dropdown_item_link} >Logout</Link>
+                        </div>
                     </div>
                 )}
             </div>

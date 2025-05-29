@@ -72,7 +72,7 @@ function Playlist() {
             )}
             <main className={classes.main_content}>
                 <div className={classes.header_section}>
-                    <h2>Your Music Collection</h2>
+                    <h2>Your Playlist</h2>
                     <button className={classes.btn_new} onClick={() => setIsNewMusicDialogOpen(true)}>New</button>
                 </div>
                 {isFetching && (
